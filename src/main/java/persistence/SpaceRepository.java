@@ -1,3 +1,3 @@
-public class SpaceRepository {
-    
+public interface SpaceRepository  extends JpaRepository<Space, int> { 
+
 }

@@ -3,11 +3,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="espacio")
-public class Space {
+public class SpaceEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

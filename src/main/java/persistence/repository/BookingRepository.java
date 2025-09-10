@@ -1,4 +1,4 @@
-package persistence;
+package persistence.repository;
 
 import org.springframework.stereotype.Repository;
 

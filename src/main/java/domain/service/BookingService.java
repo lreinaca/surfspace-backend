@@ -1,4 +1,4 @@
-package domain;
+package domain.service;
 
 import org.springframework.stereotype.Service;
 

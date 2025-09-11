@@ -1,5 +1,5 @@
 @RestController
-@RequestMapping("/api/v1/espacios")
+@RequestMapping("/api/espacios")
 @Tag(name = "Spaces", description = "API for managing spaces in the system")
 public class SpaceController {
     private final SpaceService spaceService;
@@ -64,9 +64,9 @@ public class SpaceController {
 
     //DELETE
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete space", description = "Deletes a space from the system")
+    @Operation(summary = "Deactivate space", description = "Deactivates a space from the system")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Space deleted successfully"),
+        @ApiResponse(responseCode = "204", description = "Space deactivate successfully"),
         @ApiResponse(responseCode = "404", description = "Space not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })

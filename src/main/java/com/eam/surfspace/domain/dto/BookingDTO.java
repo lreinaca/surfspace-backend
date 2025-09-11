@@ -1,4 +1,4 @@
-package domain.dto;
+package com.eam.surfspace.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

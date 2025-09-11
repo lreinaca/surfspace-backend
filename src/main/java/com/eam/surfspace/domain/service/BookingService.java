@@ -1,4 +1,4 @@
-package domain.service;
+package com.eam.surfspace.domain.service;
 
 import org.springframework.stereotype.Service;
 

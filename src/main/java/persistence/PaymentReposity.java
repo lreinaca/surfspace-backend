@@ -1,3 +1,3 @@
-public class PaymentReposity {
+public interface PaymentReposity extends JpaRepository<Payment, int> {
     
 }

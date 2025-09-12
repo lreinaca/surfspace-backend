@@ -1,5 +1,6 @@
 package com.eam.surfspace.web;
 
+import com.eam.surfspace.domain.service.SpaceService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import com.eam.surfspace.persistence.entity.SpaceEntity;
-import com.eam.surfspace.service.SpaceService;
+
 
 @RestController
 @RequestMapping("/api/espacios")

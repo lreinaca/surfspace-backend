@@ -23,7 +23,7 @@ public class PaymentEntity {
     
     @Enumerated(EnumType.STRING)
     @Column(name= "metodo_pago")
-    private PaymentMethod paymentMethod;
+    private EnumPaymentMethod paymentMethod;
      
     @Column(name= "monto")
     private Double amount;
@@ -33,6 +33,6 @@ public class PaymentEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name= "estado")
-    private PaymentStatus status;
+    private EnumPaymentStatus status;
 
 }

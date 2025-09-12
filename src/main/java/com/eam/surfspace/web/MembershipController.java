@@ -13,8 +13,8 @@ import com.eam.surfspace.persistence.repository.MembershipRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/membership")
-@Tag(name = "membresia", description = "API para la gestión de membresia")
+@RequestMapping("/api/memberships")
+@Tag(name = "Memberships", description = "API for managing memberships")
 public class MembershipController {
     private MembershipRepository membershipRepository;
     @Autowired

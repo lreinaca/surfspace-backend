@@ -34,12 +34,12 @@ public class UserEntity {
 
     /*
     @OneToMany(mappedBy = "usuario")
-    private List<MembresiaEntity> membresias;
+    private List<MembershipEntity> membership;
 
     @OneToMany(mappedBy = "usuario")
-    private List<ReservaEntity> reservas;
+    private List<bookingEntity> booking;
 
     @OneToMany(mappedBy = "usuario")
-    private List<NotificacionEntity> notificaciones;
+    private List<NotificationEntity> notification;
     */
 }

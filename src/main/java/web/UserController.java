@@ -60,7 +60,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<?> getUserById(@PathVariable @Parameter(description = "ID del usuario") Integer id,
+    public ResponseEntity<UserEntity> getUserById(@PathVariable @Parameter(description = "ID del usuario") Integer id,
                                             @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT" , name = "Authorization", example = "Bearer <token>") String authHeader) {
         return null;
     }
@@ -69,7 +69,7 @@ public class UserController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un usuario", description = "Actualiza los datos de un usuario existente.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario actualizado con éxito"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<?> updateUsuario(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestBody @Parameter(description = "Datos actualizados del usuario") UserEntity user, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT", name = "Authorization", example = "Bearer <token>") String authHeader) {
+    public ResponseEntity<UserEntity> updateUsuario(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestBody @Parameter(description = "Datos actualizados del usuario") UserEntity user, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT", name = "Authorization", example = "Bearer <token>") String authHeader) {
         return null;
     }
 
@@ -77,7 +77,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar un usuario", description = "Elimina un usuario basado en su ID.")
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Usuario eliminado con éxito"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<?> deleteUser(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT",name = "Authorization", example = "Bearer <token>") String authHeader) {
+    public ResponseEntity<UserEntity> deleteUser(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT",name = "Authorization", example = "Bearer <token>") String authHeader) {
         return null;
     }
 }

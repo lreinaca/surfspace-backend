@@ -13,8 +13,8 @@ import com.eam.surfspace.persistence.entity.UserEntity;
 import com.eam.surfspace.persistence.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/user")
-@Tag(name = "usuario", description = "API para la gestión de usuarios")
+@RequestMapping("/api/users")
+@Tag(name = "Users", description = "API for users management")
 public class UserController {
 
     private UserRepository userRepository;

@@ -29,10 +29,10 @@ public class SpaceEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name= "tipo")
-    private SpaceType type;
+    private EnumSpaceType type;
 
     @Enumerated(EnumType.STRING)
     @Column(name= "estado")
-    private SpaceStatus status;
+    private EnumSpaceStatus status;
 
 }

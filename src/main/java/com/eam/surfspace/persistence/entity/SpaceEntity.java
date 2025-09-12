@@ -1,7 +1,10 @@
-package persistence;
+package com.eam.surfspace.persistence.entity;
+
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
 @Entity
@@ -13,7 +16,7 @@ public class SpaceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "id_espacio")
-    private int idSpace;
+    private Integer idSpace;
 
     @Column(name= "nombre")
     private String name;

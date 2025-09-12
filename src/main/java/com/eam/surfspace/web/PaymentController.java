@@ -1,3 +1,19 @@
+package com.eam.surfspace.web;
+
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import com.eam.surfspace.persistence.entity.PaymentEntity;
+import com.eam.surfspace.service.PaymentService;
+
 @RestController
 @RequestMapping("/api/payments")
 @Tag(name = "Payments", description = "API for managing payments in the system")

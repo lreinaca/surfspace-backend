@@ -1,4 +1,4 @@
-package persistence;
+package com.eam.surfspace.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -18,7 +18,7 @@ public class MembershipEntity {
     private int idMembresia;
     
     @ManyToOne
-    @Column(name = "id_usuario",nullable = false)
+    @JoinColumn(name = "id_usuario",nullable = false)
     private UserEntity idUsuario;
 
     @Column(name = "fecha_inicio", nullable = false)

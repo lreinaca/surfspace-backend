@@ -10,7 +10,7 @@ description = 'Aplicación que permite a los usuarios reservar espacios de traba
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 

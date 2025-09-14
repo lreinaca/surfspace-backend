@@ -35,11 +35,12 @@ public class BookingEntity {
     private Time endTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, columnDefinition = "ENUM('PENDIENTE','CONFIRMADA','CANCELADA')")
+    @Column(name = "estado", nullable = false, columnDefinition = "ENUM('PENDIENTE','CONFIRMADA','CANCELADA','EXPIRADA')")
     private EnumBookingStatus status;
 
-    // @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private PagoEntity pago;
+//    // TODO Actualizar el nombre del mappedBY que coincida con el atributo en la tabla de pagos
+//    @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private PaymentEntity pago;
 
 
 

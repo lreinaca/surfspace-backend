@@ -19,8 +19,8 @@ public class BookingEntity {
     @Column(name = "id_reserva")
     private Long idBooking;
 
-    @Column(name = "id_usuario", nullable = false)
-    private int idUser;
+    @Column(name = "id_membresia", nullable = false)
+    private int idMembership;
 
     @Column(name = "id_espacio", nullable = false)
     private int idSpace;
@@ -38,9 +38,15 @@ public class BookingEntity {
     @Column(name = "estado", nullable = false, columnDefinition = "ENUM('PENDIENTE','CONFIRMADA','CANCELADA','EXPIRADA')")
     private EnumBookingStatus status;
 
-//    // TODO Actualizar el nombre del mappedBY que coincida con el atributo en la tabla de pagos
-//    @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private PaymentEntity pago;
+    /*
+    En esta entidad (Reserva) existe una relación uno a uno con PaymentEntity,
+     y esa relación está controlada desde el atributo booking en PaymentEntity;
+     además, cuando cargue la reserva no traeré el pago hasta que se necesite (lazy),
+     y cualquier operación de guardar/actualizar/borrar sobre la reserva también se aplicará a su pago,
+      eliminándolo si queda huérfano.
+     */
+    @OneToOne(mappedBy = "booking", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private PaymentEntity pago;
 
 
 

@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class BookigResponseDTO {
+public class BookingResponseDTO {
     private Long idBookig;
     private Integer idUser;
     private Integer idSpace;

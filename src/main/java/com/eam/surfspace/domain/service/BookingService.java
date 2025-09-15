@@ -1,5 +1,6 @@
 package com.eam.surfspace.domain.service;
 
+import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.persistence.entity.BookingEntity;
 import com.eam.surfspace.persistence.repository.BookingRepository;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.Optional;
 public class BookingService {
     private final BookingRepository bookingRepository;
 
+    //  TODO  implementar el uso de DTO y Mappers
     public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }

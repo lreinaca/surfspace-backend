@@ -3,6 +3,7 @@ package com.eam.surfspace.domain.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SpaceService {
-    
+public class NotificationService {
+
+
 }

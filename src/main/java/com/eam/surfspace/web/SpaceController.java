@@ -14,8 +14,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import com.eam.surfspace.persistence.entity.SpaceEntity;
 
+
 @RestController
-@RequestMapping("/api/spaces")
+@RequestMapping("/api/espacios")
 @Tag(name = "Spaces", description = "API for managing spaces in the system")
 public class SpaceController {
     private final SpaceService spaceService;

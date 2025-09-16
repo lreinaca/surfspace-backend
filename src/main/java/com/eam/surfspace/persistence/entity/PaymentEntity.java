@@ -18,8 +18,9 @@ public class PaymentEntity {
     @Column(name= "id_pago")
     private Integer payId;
 
-    @Column(name= "id_reserva")
-    private Integer bookingId;
+    @OneToOne
+    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva", nullable = false, unique = true)
+    private BookingEntity booking;
     
     @Enumerated(EnumType.STRING)
     @Column(name= "metodo_pago")

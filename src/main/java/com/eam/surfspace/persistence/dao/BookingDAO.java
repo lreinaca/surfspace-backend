@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
+
 public class BookingDAO {
     // Lógica de acceso a datos personalizada
     private final BookingRepository bookingRepository;

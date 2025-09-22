@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.eam.surfspace.persistence.entity.BookingEntity;
 
 @Repository
-public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
+public interface BookingRepository extends JpaRepository<BookingEntity, Integer> {
     // interfaz que extiende de JpaRepository para operaciones CRUD en BookingEntity
 
 }

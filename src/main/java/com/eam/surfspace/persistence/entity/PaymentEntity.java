@@ -19,7 +19,7 @@ public class PaymentEntity {
     private Integer payId;
 
     @OneToOne
-    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva", nullable = false, unique = true)
+    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
     private BookingEntity booking;
     
     @Enumerated(EnumType.STRING)
@@ -35,4 +35,5 @@ public class PaymentEntity {
     @Enumerated(EnumType.STRING)
     @Column(name= "estado")
     private EnumPaymentStatus status;
+
 }

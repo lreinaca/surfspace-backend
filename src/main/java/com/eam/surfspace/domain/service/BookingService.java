@@ -1,8 +1,15 @@
 package com.eam.surfspace.domain.service;
 
-import org.springframework.stereotype.Service;
+import com.eam.surfspace.domain.dto.BookingRequestDTO;
+import com.eam.surfspace.domain.dto.BookingResponseDTO;
 
-@Service
-public class BookingService {
+
+public interface BookingService {
+
+
+    BookingResponseDTO save(BookingRequestDTO bookingRequestDTO);
+
+
+
 
 }

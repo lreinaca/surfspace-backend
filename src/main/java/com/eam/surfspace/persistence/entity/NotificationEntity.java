@@ -19,14 +19,14 @@ public class NotificationEntity {
     @Column(name = "id_notificacion")
     private Long idNotification;
 
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario",
-//            foreignKey = @ForeignKey(name = "fk_notificacion_usuario"))
-//    private UsuarioEntity usuario;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario",
+            foreignKey = @ForeignKey(name = "fk_notificacion_usuario"))
+    private UserEntity usuario;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo", nullable = false, columnDefinition =
-            "ENUM('booking_confirmation','booking_cancellation','payment_received','payment_failed','general_announcement')")
+            "ENUM('SISTEMA','RESERVA','PAGO','PROMOCION','OTRO')")
     private EnumNotificationType type;
 
     @Column(name = "mensaje", nullable = false, length = 500)
@@ -40,17 +40,9 @@ public class NotificationEntity {
             foreignKey = @ForeignKey(name = "fk_notificacion_reserva"))
     private BookingEntity booking;
 
-//    @ManyToOne
-//    @JoinColumn(name = "id_pago", referencedColumnName = "id_pago",
-//            foreignKey = @ForeignKey(name = "fk_notificacion_pago"))
-//    private Payment pago;
-
-
-
-
-
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "id_pago", referencedColumnName = "id_pago",
+            foreignKey = @ForeignKey(name = "fk_notificacion_pago"))
+    private PaymentEntity pago;
 
 }

@@ -1,5 +1,7 @@
 package com.eam.surfspace.web;
 
+import com.eam.surfspace.domain.dto.BookingRequestDTO;
+import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
 import com.eam.surfspace.persistence.entity.BookingEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,21 +9,22 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/bookings")
+@Slf4j
+@RestController // recibe y contesta peticiones de tipo rest http
+@RequestMapping("/api/bookings") // para acceder al controlador desde una ruta http
+@RequiredArgsConstructor
 @Tag(name = "Bookings", description = "API for Booking Management in the Coworking Space " +
         "Each client can have multiple bookings.")
-public class BookingController {
-    private final BookingService bookingService;
+@CrossOrigin(origins = "*")// sino pongo esto no puede recibir ninguna petición , no sabe a quien escuchar , se cambia cuando empecemos el frontend , ponemos aca la url
 
-    @Autowired
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
-    }
+public class BookingController {
+
+    private final BookingService bookingService;
 
     // CREATE
     @PostMapping
@@ -33,9 +36,12 @@ public class BookingController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
-    public ResponseEntity<BookingEntity> createBooking(@RequestBody BookingEntity booking) {
+    // TODO RETORNO UN DTORESPONSE Y RECIBO UN DTO REQUEST
+    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO booking) {
         // TODO: implement logic
-        return null;
+        log.info("Create a new booking for a client in the coworking space");
+        BookingResponseDTO bookingSaved = bookingService.save(booking);
+        return ResponseEntity.ok(bookingSaved);
     }
 
     // READ ALL

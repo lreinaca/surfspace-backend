@@ -35,5 +35,4 @@ public class PaymentEntity {
     @Enumerated(EnumType.STRING)
     @Column(name= "estado")
     private EnumPaymentStatus status;
-
 }

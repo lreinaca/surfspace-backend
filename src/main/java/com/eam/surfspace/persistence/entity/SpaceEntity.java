@@ -27,7 +27,7 @@ public class SpaceEntity {
     @Column(name= "descripcion")
     private String description;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) //SALA_DE_REUNION, ESPACIO_COMPARTIDO
     @Column(name= "tipo")
     private EnumSpaceType type;
 

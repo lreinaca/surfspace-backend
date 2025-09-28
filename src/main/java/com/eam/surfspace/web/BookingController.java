@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Bookings", description = "API for Booking Management in the Coworking Space " +
         "Each client can have multiple bookings.")
-@CrossOrigin(origins = "*")// sino pongo esto no puede recibir ninguna petición , no sabe a quien escuchar , se cambia cuando empecemos el frontend , ponemos aca la url
+@CrossOrigin(origins = "*")
+// sino pongo esto no puede recibir ninguna petición , no sabe a quien escuchar , se cambia cuando empecemos el frontend , ponemos aca la url
 
 public class BookingController {
 
@@ -33,17 +35,21 @@ public class BookingController {
                     "\n Each booking is associated with a client and includes details such as date, time, and workspace.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Booking created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "Client not found")
+            @ApiResponse(responseCode = "400", description = "Invalid input data or Client not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    // TODO RETORNO UN DTORESPONSE Y RECIBO UN DTO REQUEST
+    // siempre retorno DTO RESPONSE Y RECIBO UN DTO REQUEST
     public ResponseEntity<BookingResponseDTO> createBooking(
             @Parameter(description = "Booking data", required = true)
             @RequestBody BookingRequestDTO booking) {
-        // TODO: implement logic
-        log.info("Create a new booking for a client in the coworking space");
-        BookingResponseDTO bookingSaved = bookingService.save(booking);
-        return ResponseEntity.ok(bookingSaved);
+           log.info("Create a new booking for a client in the coworking space");
+        try {
+            BookingResponseDTO bookingSaved = bookingService.save(booking);
+            return ResponseEntity.status(HttpStatus.CREATED).body(bookingSaved);
+        } catch (IllegalArgumentException e) {
+            log.warn("Error creating booking: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // READ ALL
@@ -92,7 +98,7 @@ public class BookingController {
             Long id,
             @RequestBody @Parameter(description = "Updated booking data", required = true)
             BookingEntity booking) {
-            // TODO: implement logic
+        // TODO: implement logic
         return null;
 
     }

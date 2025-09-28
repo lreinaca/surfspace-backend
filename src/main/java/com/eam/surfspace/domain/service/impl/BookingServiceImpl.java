@@ -3,6 +3,8 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
+import com.eam.surfspace.domain.service.MembershipService;
+import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,47 +22,80 @@ import java.time.LocalDateTime;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO;
+    private final MembershipService membershipService; // Servicio para validar membresía
+    private final SpaceService spaceService;
 
     @Override
     public BookingResponseDTO save(BookingRequestDTO bookingRequestDTO) {
         log.info("Create a new booking for a client in the coworking space {}",
                 bookingRequestDTO.getIdMembership());
+        // TODO
+        // Aqui debo llamar el método para validar que la membresia esté activa
+            // traer el metodo desde el servicio de membresia (MembershipService)
+        boolean isMembershipActive = true; // Simulación de la verificación de la membresía
+        if (!isMembershipActive) {
+            throw new IllegalArgumentException("La membresía no está activa. No se puede crear la reserva.");
+        }
 
-        // Validar reglas de negocio respecto a las horas
+        // TODO
+        // Aqui debo llamar el método para validar que el espacio a reservar esté disponible
+            //
+        boolean isSpaceAvailable = true; // Simulación de la verificación de disponibilidad del espacio
+        if (!isSpaceAvailable) {
+            throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
+        }
+
+        // Validar reglas de negocio respecto a las fechas y horas de la reserva
         validateTimes(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
         validateDuration(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
-        validateBookingDate(bookingRequestDTO.getStartDateTime());
 
-        // crear reseeva
+        // Crear reseeva
         BookingResponseDTO bookingResponseDTO = bookingDAO.save(bookingRequestDTO);
         log.info("Booking has been saved successfully");
 
         return bookingResponseDTO;
     }
 
-    /**
-     * Validación: hora de inicio < hora de fin
+    /***
+     * Verifica las fechas y horas de la reserva : haciendo las siguientes validaciones
+     *  Valida que las las fechas y horas no sean nulas
+     *  Valida que fecha y hora de inicio sea posterior a la hora actual
+     *  Valida que la hora de fin sea mayor 30 minudos de la hora de inicio
+     *  Valida que la fecha de inicio no sea mayor a 3 meses de la fecha actual
+     * @param start - fecha y hora de inicio
+     * @param end - fecha y hora de fin
+     * @throws IllegalArgumentException si alguna de las validaciones falla
      */
     private void validateTimes(LocalDateTime start, LocalDateTime end) {
+        // Valida que las las fechas y horas no sean nulas
         if (start == null || end == null) {
             throw new IllegalArgumentException("Hora de Inicio y Hora de Fin son Obligatorias");
         }
-        // Hora fin debe ser estrictamente mayor que hora inicio
-        if (!end.isAfter(start)) {
-            throw new IllegalArgumentException("Hora Fin debe ser mayor a la hora de inicio");
-        }
 
-        // La fecha de reserva debe ser una fecha futura, no puede reservar en el pasado
+        // Valida que fecha y hora de inicio sea posterior a la hora actual
         if (start.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La fecha de inicio debe ser una fecha futura.");
         }
+
+        // Valida que la hora de inicio sea mayor a 30 minutos de la hora actual
+        if (!start.isAfter(LocalDateTime.now().plusMinutes(30))) {
+            throw new IllegalArgumentException("Hora Inicio debe ser mayor a 30 minutos de la hora actual");
+        }
+
+        // Valida que la fecha de inicio no sea mayor a 3 meses de la fecha actual
+        if(start.isAfter(LocalDateTime.now().plusMonths(3))){
+            throw new IllegalArgumentException("La reserva no puede hacerse con más de 3 meses de anticipación.");
+        }
+
     }
 
-    /**
-     * Valida la duración de una reserva:
-     * - Mínimo 1 hora
-     * - Máximo 8 horas
-     * - Debe ser múltiplo de horas exacto
+    /***
+     * Valida la duración de la reserva
+     * La duración mínima es de 1 hora
+     * La duración máxima es de 8 horas
+     * La duración debe ser en horas exactas
+     * @param startDateTime
+     * @param endDateTime
      */
     private void validateDuration(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Duration duration = Duration.between(startDateTime, endDateTime);
@@ -76,19 +111,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    /**
-     * Validación: anticipación mínima (30 min) y máxima (3 meses)
-     */
-    private void validateBookingDate(LocalDateTime bookingDate) {
-        LocalDateTime now = LocalDateTime.now();
-        if(bookingDate.isBefore(now.plusMinutes(30))){
-            throw new IllegalArgumentException("La reserva debe hacerse con al menos 30 minutos de anticipación.");
-        }
 
-        if(bookingDate.isAfter(now.plusMonths(3))){
-            throw new IllegalArgumentException("La reserva no puede hacerse con más de 3 meses de anticipación.");
-        }
-    }
 
     /**
      * Valida que una reserva pueda ser modificada solo hasta 12h antes del inicio

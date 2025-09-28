@@ -1,5 +1,6 @@
 package com.eam.surfspace.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -44,9 +45,11 @@ public class BookingRequestDTO {
     private Integer idSpace;
 
     @NotNull (message = "La hora de inicio es obligatoria")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]")
     private LocalDateTime startDateTime;
 
     @NotNull (message = "La hora de fin es obligatoria")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]")
     private LocalDateTime endDateTime;
 
     @NotNull (message = "El estado es obligatorio")

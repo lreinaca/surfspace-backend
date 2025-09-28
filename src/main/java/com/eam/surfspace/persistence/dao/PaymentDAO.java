@@ -18,8 +18,12 @@ public class PaymentDAO {
 
     //CREAR UN PAGO ----------------------------------------------------------------
     public PaymentDTO save(PaymentDTO paymentDTO){
-        PaymentEntity EntityPaymentToSave = paymentMapper.toPaymentEntity(paymentDTO);
-        PaymentEntity paymentEntity = paymentRepository.save(EntityPaymentToSave);
+        PaymentEntity entityPaymentToSave = paymentMapper.toPaymentEntity(paymentDTO);
+
+        if(entityPaymentToSave.getAmount() == null) {
+            throw new IllegalArgumentException("the mount to pay cannot be null");
+        }
+        PaymentEntity paymentEntity = paymentRepository.save(entityPaymentToSave);
         return paymentMapper.toPaymentDTO(paymentEntity);
     }
 

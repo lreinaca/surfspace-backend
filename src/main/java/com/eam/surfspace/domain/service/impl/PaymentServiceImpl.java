@@ -5,8 +5,6 @@ import com.eam.surfspace.domain.service.PaymentService;
 import com.eam.surfspace.persistence.dao.PaymentDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         //crear el pago
         PaymentDTO createdPayment = paymentDAO.save(paymentDTO);
-        log.info("payment created successfully");
+        log.info("payment with id: {} created successfully", createdPayment.getPayId());
         return createdPayment;
     }
 
@@ -57,7 +55,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     // Metodo de validación de datos
     private void validatePaymentData(PaymentDTO paymentDTO) {
-        //TO DO
+        if (paymentDTO.getAmount() == null) {
+            throw new IllegalArgumentException("El monto no puede ser nulo");
+        }
     }
 
 }

@@ -16,8 +16,11 @@ import java.util.List;
 )
 public interface PaymentMapper {
 
+    //Entity -> DTO
+    @Mapping(source = "status", target = "status", qualifiedByName = "enumToString")
     PaymentDTO toPaymentDTO(PaymentEntity payment);
 
+    //DTO -> Entity
     @InheritInverseConfiguration(name = "toPaymentDTO")
     PaymentEntity toPaymentEntity(PaymentDTO paymentDTO);
 

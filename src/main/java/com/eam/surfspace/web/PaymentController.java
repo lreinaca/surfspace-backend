@@ -36,20 +36,23 @@ public class PaymentController  {
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<PaymentDTO> createPayment(
-            @Parameter(description = "Datos del pago a crear", required = true)
-            @RequestBody PaymentDTO paymentDTO) {
-        log.info("POST /api/payments - Creating payment for booking with id: {}", paymentDTO.getBooking().getBookingId());
-
-        try {
-            PaymentDTO newPayment = paymentService.savePayment(paymentDTO);
-            log.info("payment created successfully\n");
-            return ResponseEntity.status(HttpStatus.CREATED).body(newPayment);
-        } catch (IllegalArgumentException e) {
-            log.warn("Error creating payment", e.getMessage());
-            return ResponseEntity.badRequest().build();
+public ResponseEntity<PaymentDTO> createPayment(
+        @Parameter(description = "Datos del pago a crear", required = true)
+        @RequestBody PaymentDTO paymentDTO) {
+    try {
+        if (paymentDTO.getBooking() != null) {
+            log.info("POST /api/payments - Creating payment for booking with id: {}", paymentDTO.getBooking().getBookingId());
+        } else {
+            log.warn("POST /api/payments - El booking es nulo en el PaymentDTO recibido");
         }
+        PaymentDTO newPayment = paymentService.savePayment(paymentDTO);
+        log.info("payment created successfully\n");
+        return ResponseEntity.status(HttpStatus.CREATED).body(newPayment);
+    } catch (IllegalArgumentException e) {
+        log.warn("Error creating payment", e.getMessage());
+        return ResponseEntity.badRequest().build();
     }
+}
 
     // READ ALL---------------------------------------------------
     @GetMapping

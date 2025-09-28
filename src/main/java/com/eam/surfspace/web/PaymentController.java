@@ -4,13 +4,9 @@ import com.eam.surfspace.domain.dto.PaymentDTO;
 import com.eam.surfspace.domain.service.PaymentService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -20,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import com.eam.surfspace.persistence.entity.PaymentEntity;
 
 @Slf4j
 @RestController
@@ -30,7 +25,6 @@ import com.eam.surfspace.persistence.entity.PaymentEntity;
 @Tag(name = "Payments", description = "API for managing payments in the system")
 public class PaymentController  {
 
-    private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
     private final PaymentService paymentService;
 
 
@@ -45,7 +39,7 @@ public class PaymentController  {
     public ResponseEntity<PaymentDTO> createPayment(
             @Parameter(description = "Datos del pago a crear", required = true)
             @RequestBody PaymentDTO paymentDTO) {
-        log.info("POST /api/payments - Creating payment for booking");
+        log.info("POST /api/payments - Creating payment for booking with id: {}", paymentDTO.getBooking().getBookingId());
 
         try {
             PaymentDTO newPayment = paymentService.savePayment(paymentDTO);
@@ -81,12 +75,12 @@ public class PaymentController  {
     })
     public ResponseEntity<PaymentDTO> getPaymentByBooking(
             @Parameter(description = "booking ID", required = true)
-            @PathVariable long idBooking
+            @PathVariable Integer idBooking
     ){
         log.debug("GET /api/payments/booking/{} - payment for booking", idBooking);
 
         try {
-            PaymentDTO payment = paymentService.getPaymentByBooking(idBooking);
+            PaymentDTO payment = paymentService.getPaymentByIdBooking(idBooking);
             log.debug("Payment for booking {} found", idBooking);
             return ResponseEntity.ok(payment);
         } catch (RuntimeException e) {

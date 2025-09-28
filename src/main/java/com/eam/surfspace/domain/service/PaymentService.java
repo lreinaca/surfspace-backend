@@ -11,5 +11,5 @@ public interface PaymentService {
 
     List<PaymentDTO> getAllPayment();
 
-    PaymentDTO getPaymentByBooking(long idBooking);
+    PaymentDTO getPaymentByIdBooking(Integer idBooking);
 }

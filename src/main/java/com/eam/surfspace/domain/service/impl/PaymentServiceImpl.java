@@ -14,11 +14,10 @@ import java.util.List;
 
 @Service
 @Transactional //si algo falla a mitad, se deshace cambios
-@Slf4j //para los "log"
+@Slf4j// para los "log"
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-    private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
-    private PaymentDAO paymentDAO;
+    private final PaymentDAO paymentDAO;
 
     //CREAR UN PAGO --------------------------------------------------------
     @Override
@@ -45,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
     //OBTENER EL PAGO DE UNA RESERVA -------------------------------------------
     @Override
     @Transactional(readOnly = true)
-    public PaymentDTO getPaymentByBooking(long idBooking) {
+    public PaymentDTO getPaymentByIdBooking(Integer idBooking) {
         log.debug("getting payment by booking: {}", idBooking);
 
         return paymentDAO.findByBooking(idBooking).orElseThrow(() -> {

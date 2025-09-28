@@ -24,13 +24,16 @@ public class PaymentDAO {
     }
 
     //OBTENER TODOS LOS PAGOS ------------------------------------------------------
-    public List<PaymentDTO> findAll(){
+    public List<PaymentDTO> findAll() {
         List<PaymentEntity> payEntities = paymentRepository.findAll();
+        if (payEntities.isEmpty()) {
+            return List.of();
+        }
         return paymentMapper.toPaymentDTOList(payEntities);
     }
 
     //OBTENER EL PAGO DE UNA RESERVA ------------------------------------------------
-    public Optional<PaymentDTO> findByBooking(long idBooking){ //opcional para evitar que retorne null
-        return paymentRepository.findByBooking(idBooking).map(paymentMapper::toPaymentDTO);
+    public Optional<PaymentDTO> findByBooking(Integer idBooking){ //opcional para evitar que retorne null
+        return paymentRepository.findByBooking_bookingId(idBooking).map(paymentMapper::toPaymentDTO);
     }
 }

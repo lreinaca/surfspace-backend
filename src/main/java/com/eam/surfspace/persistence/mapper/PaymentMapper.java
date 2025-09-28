@@ -11,18 +11,19 @@ import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.WARN//avisa si olvido mapear algo
+        unmappedTargetPolicy = ReportingPolicy.WARN, //avisa si olvido mapear algo
+        uses = {BookingMapper.class}
 )
 public interface PaymentMapper {
 
     PaymentDTO toPaymentDTO(PaymentEntity payment);
 
-    @InheritInverseConfiguration(name = "toPaymentEntity")
+    @InheritInverseConfiguration(name = "toPaymentDTO")
     PaymentEntity toPaymentEntity(PaymentDTO paymentDTO);
 
     List<PaymentDTO> toPaymentDTOList(List<PaymentEntity> paymentEntities);
 
-    @InheritInverseConfiguration(name = "toPaymentDTO")
+    @InheritInverseConfiguration(name = "toPaymentDTOList")
     List<PaymentEntity> toPaymentEntityList(List<PaymentDTO> paymentDTOS);
 
     //Enum 'Status' a String
@@ -31,7 +32,7 @@ public interface PaymentMapper {
         return enumStatus != null ? enumStatus.name() : null;
     }
 
-    @InheritInverseConfiguration(name = "stringToEnum")
+    @InheritInverseConfiguration(name = "enumToStringStatus")
     static EnumPaymentStatus stringToEnumStatus(String status){
         return status != null ? EnumPaymentStatus.valueOf(status.toUpperCase()) : null;
     }

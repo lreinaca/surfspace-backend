@@ -24,7 +24,7 @@ public class PaymentDTO {
     private Integer payId;
 
     @Schema(description = "Reservation related to payment", required = true, accessMode = Schema.AccessMode.READ_ONLY)
-    private BookingDTO booking;
+    private BookingResponseDTO booking;
 
     @Schema(description = "Payment method", required = true)
     private EnumPaymentMethod paymentMethod;

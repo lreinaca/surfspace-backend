@@ -2,8 +2,8 @@ package com.eam.surfspace.persistence.entity;
 
 public enum EnumPaymentStatus {
     
-    COMPLETED,
-    PENDING,
-    FAILED
+    APROBADO,
+    RECHAZADO, //este es por defecto
+    PENDIENTE
 
 }

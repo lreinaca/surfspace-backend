@@ -37,7 +37,9 @@ public class BookingController {
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     // TODO RETORNO UN DTORESPONSE Y RECIBO UN DTO REQUEST
-    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO booking) {
+    public ResponseEntity<BookingResponseDTO> createBooking(
+            @Parameter(description = "Booking data", required = true)
+            @RequestBody BookingRequestDTO booking) {
         // TODO: implement logic
         log.info("Create a new booking for a client in the coworking space");
         BookingResponseDTO bookingSaved = bookingService.save(booking);

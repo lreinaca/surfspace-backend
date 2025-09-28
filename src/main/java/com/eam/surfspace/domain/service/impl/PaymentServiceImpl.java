@@ -51,12 +51,22 @@ public class PaymentServiceImpl implements PaymentService {
         });
     }
 
-    //POSIBLE METODO PARA TODOS LOS PAGOS HECHOS POR UNA PERSONA, PARA REPORTES
-
-    // Metodo de validación de datos
+    // Metodo de validación de datos--------------------------------------------
     private void validatePaymentData(PaymentDTO paymentDTO) {
-        if (paymentDTO.getAmount() == null) {
-            throw new IllegalArgumentException("El monto no puede ser nulo");
+        if (paymentDTO.getAmount() == null || paymentDTO.getAmount() <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a cero");
+        }
+        if (paymentDTO.getMethod() == null) {
+            throw new IllegalArgumentException("El método de pago no puede ser nulo o vacío");
+        }
+        if (paymentDTO.getDate() == null) {
+            throw new IllegalArgumentException("La fecha de pago no puede ser nula");
+        }
+        if (paymentDTO.getStatus() == null) {
+            throw new IllegalArgumentException("El estado no puede ser nulo o vacío");
+        }
+        if (paymentDTO.getBooking() == null || paymentDTO.getBooking().getBookingId() == null) {
+            throw new IllegalArgumentException("La reserva asociada a pago no puede ser nula");
         }
     }
 

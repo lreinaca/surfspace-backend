@@ -24,13 +24,13 @@ public class PaymentEntity {
     
     @Enumerated(EnumType.STRING)
     @Column(name= "metodo_pago")
-    private EnumPaymentMethod paymentMethod;
+    private EnumPaymentMethod method;
      
     @Column(name= "monto")
     private Double amount;
 
     @Column(name= "fecha_pago")
-    private LocalDateTime paymentDate;
+    private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     @Column(name= "estado")

@@ -1,6 +1,9 @@
 package com.eam.surfspace.web;
 
+import com.eam.surfspace.domain.dto.PaymentDTO;
+import com.eam.surfspace.domain.dto.SpaceDTO;
 import com.eam.surfspace.domain.service.SpaceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import com.eam.surfspace.persistence.entity.SpaceEntity;
 
 
+@Slf4j
 @RestController
-@RequestMapping("/api/espacios")
+@RequestMapping("/api/spaces")
 @Tag(name = "Spaces", description = "API for managing spaces in the system")
 public class SpaceController {
     private final SpaceService spaceService;
@@ -35,8 +39,16 @@ public class SpaceController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<SpaceEntity> createSpace(@RequestBody SpaceEntity space){
-        //Códigooo
-        return null;
+        log.debug("POST /api/spaces - payment for booking", idBooking);
+
+        try {
+            SpaceDTO spaceDTO = paymentService.getPaymentByIdBooking(idBooking);
+            log.debug("Payment for booking {} found", idBooking);
+            return ResponseEntity.ok(payment);
+        } catch (RuntimeException e) {
+            log.warn("Payment for this booking -{}-has not yet been made or was not found", idBooking);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //READ ALL
@@ -47,8 +59,16 @@ public class SpaceController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<SpaceEntity>> getAllSpaces(){
-        //Códigooo
-        return null;
+        log.debug("GET /api/payments/booking/{} - payment for booking", idBooking);
+
+        try {
+            PaymentDTO payment = paymentService.getPaymentByIdBooking(idBooking);
+            log.debug("Payment for booking {} found", idBooking);
+            return ResponseEntity.ok(payment);
+        } catch (RuntimeException e) {
+            log.warn("Payment for this booking -{}-has not yet been made or was not found", idBooking);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //READ BY ID

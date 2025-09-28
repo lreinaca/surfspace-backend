@@ -27,13 +27,13 @@ public class PaymentDTO {
     private BookingResponseDTO booking;
 
     @Schema(description = "Payment method", required = true)
-    private EnumPaymentMethod paymentMethod;
+    private EnumPaymentMethod method;
 
     @Schema(description = "Amount to pay", example = "150000.0", required = true, accessMode = Schema.AccessMode.READ_ONLY)
     private Double amount;
 
     @Schema(description = "Date and time the payment is made", example = "2025-09-07T10:30:00", accessMode = Schema.AccessMode.READ_ONLY)
-    private LocalDateTime paymentDate;
+    private LocalDateTime date;
 
     @Schema(description = "Status of a payment", required = true)
     private EnumPaymentStatus status;

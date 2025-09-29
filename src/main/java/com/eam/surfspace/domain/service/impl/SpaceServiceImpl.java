@@ -3,6 +3,7 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.dto.SpaceDTO;
 import com.eam.surfspace.domain.service.SpaceService;
+import com.eam.surfspace.persistence.dao.BookingDAO;
 import com.eam.surfspace.persistence.dao.SpaceDAO;
 import com.eam.surfspace.persistence.entity.EnumSpaceStatus;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SpaceServiceImpl implements SpaceService {
     private final SpaceDAO spaceDAO;
+    private final BookingDAO bookingDAO;
 
     //CREAR UN ESPACIO --------------------------------------------------------
     @Override //sirve para sobreescribir un metodo de una interfaz
@@ -32,7 +34,7 @@ public class SpaceServiceImpl implements SpaceService {
         //crear el espacio
         SpaceDTO createdSpace = spaceDAO.save(spaceDTO);
         log.info("space with id: {} created successfully", createdSpace.getIdSpace());
-        return /*createdSpace*/null;
+        return createdSpace;
     }
 
     //OBTENER TODOS LOS ESPACIOS -------------------------------------------------
@@ -57,24 +59,26 @@ public class SpaceServiceImpl implements SpaceService {
 
     //ACTUALIZAR ESPACIO ------------------------------------------------
     @Override
-    public SpaceDTO updateSpace(Integer idSpace, SpaceDTO spaceDTO) {
+    public SpaceDTO updateSpace(Integer idSpace, SpaceDTO updateDTO) {
         log.info("updating space with id: {}", idSpace);
 
         //validar datos del espacio
-        validateSpaceData(spaceDTO);
+        validateSpaceData(updateDTO);
 
         //buscar el espacio a actualizar
         SpaceDTO existingSpace = getSpaceById(idSpace);
 
-        //actualizar los campos necesarios
-        existingSpace.setName(spaceDTO.getName());
-        existingSpace.setCapacity(spaceDTO.getCapacity());
-        existingSpace.setDescription(spaceDTO.getDescription());
-        existingSpace.setType(spaceDTO.getType());
-        existingSpace.setStatus(spaceDTO.getStatus());
+        //actualizamos solo los campos necesarios
+        existingSpace.setName(updateDTO.getName());
+        existingSpace.setCapacity(updateDTO.getCapacity());
+        existingSpace.setDescription(updateDTO.getDescription());
+        existingSpace.setType(updateDTO.getType());
+        existingSpace.setStatus(updateDTO.getStatus());
 
         //guardar los cambios
-        SpaceDTO updatedSpace = spaceDAO.updateSpace(idSpace, spaceDTO);
+        SpaceDTO updatedSpace = spaceDAO.updateSpace(idSpace, updateDTO)
+                .orElseThrow(()-> new RuntimeException("Error al actualizar espacio: " + idSpace));
+
         log.info("space with id: {} updated successfully", updatedSpace.getIdSpace());
         return updatedSpace;
     }
@@ -88,7 +92,7 @@ public class SpaceServiceImpl implements SpaceService {
         SpaceDTO existingSpace = getSpaceById(idSpace);
 
         //cambiar el estado a IDLE
-        existingSpace.setStatus(EnumSpaceStatus.IDLE);
+        existingSpace.setStatus(EnumSpaceStatus.INACTIVO);
 
         //guardar los cambios
         spaceDAO.save(existingSpace);
@@ -97,9 +101,6 @@ public class SpaceServiceImpl implements SpaceService {
 
     //Metodo de validación de datos--------------------------------------------
     public void validateSpaceData(SpaceDTO spaceDTO){
-        if (spaceDTO.getIdSpace() == null || spaceDTO.getIdSpace() <= 0){
-            throw new IllegalArgumentException("El id no puede ser nulo o un número negativo");
-        }
         if (spaceDTO.getStatus() == null){
             throw new IllegalArgumentException("Se debe definir el estado del espacio, no debe ser nulo");
         }
@@ -121,17 +122,26 @@ public class SpaceServiceImpl implements SpaceService {
     public boolean isSpaceAvailable(int idSpace, LocalDateTime requestedStart, LocalDateTime requestedEnd){
         //verificar existencia del espacio que recibimos
         SpaceDTO space = spaceDAO.findById(idSpace)
-                .orElseThrow(()-> new IllegalArgumentException("The space not found"));
+                .orElseThrow(()-> new IllegalArgumentException("El espacio no fue encontrado"));
 
-        //verificamos su estado
-        if (space.getStatus() != EnumSpaceStatus.AVAILABLE){
+        //verificamos el estado del espacio
+        if (space.getStatus() != EnumSpaceStatus.DISPONIBLE){
             return false;
         }
 
-        //verificar que la nueva reserva no choque en tiempo con una ya existente
-        List<BookingResponseDTO> overLappingBookings = bookingServiceImpl;
+        if (requestedStart == null || requestedEnd == null) {
+            throw new IllegalArgumentException("Se requieren fechas de inicio y finalización.");
+        }
+        if (!requestedStart.isBefore(requestedEnd)) {
+            throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de finalización");
+        }
 
-        return true; //el espacio está activo y disponible
+        //validamos que no haya reservas que se crucen con las fechas solicitadas
+        boolean existsOverLap = bookingDAO.existsBySpaceIdAndTimeOverlap(idSpace, requestedStart, requestedEnd);
+        if(existsOverLap){
+            return false; //el espacio no está disponible en las fechas solicitadas
+        }
+        return true; //el espacio está disponible y activo
     }
 
 }

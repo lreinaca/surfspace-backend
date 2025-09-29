@@ -2,6 +2,7 @@ package com.eam.surfspace.persistence.dao;
 
 import com.eam.surfspace.domain.dto.PaymentDTO;
 import com.eam.surfspace.domain.dto.SpaceDTO;
+import com.eam.surfspace.persistence.entity.EnumSpaceStatus;
 import com.eam.surfspace.persistence.entity.PaymentEntity;
 import com.eam.surfspace.persistence.entity.SpaceEntity;
 import com.eam.surfspace.persistence.mapper.SpaceMapper;
@@ -41,19 +42,19 @@ public class SpaceDAO {
     }
 
     //ACTUALIZAR INFO DE UN ESPACIO -------------------------------------------------
-    public Optional<PaymentDTO> updateSpace(int idSpace, SpaceDTO updateDTO){
+    public Optional<SpaceDTO> updateSpace(int idSpace, SpaceDTO updateDTO){
         return spaceRepository.findById(idSpace)
                 .map(existingEntity -> {
                     spaceMapper.updateEntityFromDTO(updateDTO, existingEntity);
                     SpaceEntity updatedEntity = spaceRepository.save(existingEntity);
                     return spaceMapper.toSpaceDTO(updatedEntity);
-                })
+                });
     }
 
     //DESACTIVAR UN ESPACIO ---------------------------------------------------------
     public void deactivateSpace(int idSpace) {
         spaceRepository.findById(idSpace).ifPresent(spaceEntity -> {
-            spaceEntity.setStatus("IDLE");
+            spaceEntity.setStatus(EnumSpaceStatus.INACTIVO);
             spaceRepository.save(spaceEntity);
         });
     }

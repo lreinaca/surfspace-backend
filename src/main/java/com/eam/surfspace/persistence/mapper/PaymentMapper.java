@@ -22,6 +22,7 @@ public interface PaymentMapper {
     //DTO -> Entity
     @Mapping(source = "status", target = "status", qualifiedByName = "stringToEnumStatus")
     @Mapping(source= "method", target= "method", qualifiedByName = "stringToEnumMethod")
+
     PaymentEntity toPaymentEntity(PaymentDTO paymentDTO);
 
     List<PaymentDTO> toPaymentDTOList(List<PaymentEntity> paymentEntities);

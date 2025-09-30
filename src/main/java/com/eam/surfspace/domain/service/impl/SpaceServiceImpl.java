@@ -126,6 +126,7 @@ public class SpaceServiceImpl implements SpaceService {
 
         //verificamos el estado del espacio
         if (space.getStatus() != EnumSpaceStatus.DISPONIBLE){
+            log.info("El espacio con id: {} no está disponible", idSpace);
             return false;
         }
 

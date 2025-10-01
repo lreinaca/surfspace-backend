@@ -11,13 +11,7 @@ import java.util.List;
 
 @Repository
 public interface MembershipRepository extends JpaRepository<MembershipEntity, Integer> {
-//
-//    List<MembershipEntity> findByStatus(MembershipStatus status);
-//
-//
-//    List<MembershipEntity> findByEndDateBefore(LocalDate date);
-//
-//    List<MembershipEntity> findByUserEntityIdAndStatus(Integer userId, MembershipStatus status);
+
 
     long countByIdUsuario_IdUsuarioAndEstado(Integer idUsuario, MembershipStatus estado);
 
@@ -32,3 +26,16 @@ public interface MembershipRepository extends JpaRepository<MembershipEntity, In
                                        @Param("fechaInicio") LocalDate fechaInicio ,
                                        @Param("fechaFin") LocalDate fechaFin);
 }
+
+
+
+
+
+//    List<MembershipEntity> findByStatus(MembershipStatus status);
+//
+//    List<MembershipEntity> findByEndDateBefore(LocalDate date);
+//
+//    List<MembershipEntity> findByUserEntityIdAndStatus(Integer userId, MembershipStatus status);
+
+
+

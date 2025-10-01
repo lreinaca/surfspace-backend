@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "usuario")
 @Data
@@ -33,14 +35,10 @@ public class UserEntity {
     @Column(nullable = false)
     private String rol;
 
-    /*
-    @OneToMany(mappedBy = "usuario")
-    private List<MembershipEntity> membership;
+    @OneToMany(mappedBy = "idUsuario")
+    private List<MembershipEntity> memberships;
 
+    // Relación 1 a muchos con notificaciones
     @OneToMany(mappedBy = "usuario")
-    private List<bookingEntity> booking;
-
-    @OneToMany(mappedBy = "usuario")
-    private List<NotificationEntity> notification;
-    */
+    private List<NotificationEntity> notifications;
 }

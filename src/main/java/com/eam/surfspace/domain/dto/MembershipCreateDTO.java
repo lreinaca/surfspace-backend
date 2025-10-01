@@ -1,5 +1,6 @@
 package com.eam.surfspace.domain.dto;
 
+import com.eam.surfspace.persistence.entity.MembershipStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class MembershipCreateDTO {
     @Schema(description = "ID del usuario de la membresía",
             example = "10",
             required = true)
-    private Integer userId;
+    private Integer idUsuario;
 
     @Schema(description = "Fecha de inicio (YYYY-MM-DD)",
             example = "2025-10-01",
@@ -31,6 +32,6 @@ public class MembershipCreateDTO {
             example = "ACTIVA",
             required = true,
             maxLength = 20)
-    private String estado;
+    private MembershipStatus estado;
 }
 

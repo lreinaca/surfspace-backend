@@ -10,32 +10,32 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Datos para crear un nuevo usuario")
 public class UserCreateDTO {
     @Schema(description = "Nombre completo",
-            example = "Juan Pérez",
+            example = "Juan Velasco",
             required = true,
             maxLength = 100)
     private String nombre;
 
     @Schema(description = "Correo electrónico",
-            example = "juan.perez@email.com",
+            example = "juan.v7z@gmail.com",
             required = true,
             maxLength = 150)
     private String email;
 
-    @Schema(description = "Contraseña del usuario (solo escritura)",
+    @Schema(description = "Contraseña",
             example = "MiClaveSegura123",
             required = true,
             minLength = 8,
             maxLength = 60)
     private String contrasena;
 
-    @Schema(description = "Número de teléfono",
+    @Schema(description = "Teléfono",
             example = "3001234567",
             required = true,
             maxLength = 20)
     private String telefono;
 
-    @Schema(description = "Rol asignado",
-            example = "CLIENTE",
+    @Schema(description = "Rol",
+            example = "ADMIN",
             required = true,
             maxLength = 50)
     private String rol;

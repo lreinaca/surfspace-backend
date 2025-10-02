@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Entity
@@ -38,7 +37,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "idUsuario")
     private List<MembershipEntity> memberships;
 
-    // Relación 1 a muchos con notificaciones
     @OneToMany(mappedBy = "usuario")
     private List<NotificationEntity> notifications;
 }

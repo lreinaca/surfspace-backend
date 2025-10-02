@@ -7,7 +7,6 @@ import com.eam.surfspace.persistence.mapper.UserMapper;
 import com.eam.surfspace.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,29 +16,26 @@ public class UserDAO {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    // Crear usuario
+
     public UserDTO save(UserCreateDTO createDTO) {
         if (userRepository.existsByEmail(createDTO.getEmail())) {
-            throw new IllegalArgumentException("Este email ya está registrado.");
+            throw new IllegalArgumentException("Este correo ya está registrado.");
         }
         UserEntity entity = userMapper.toEntity(createDTO);
         UserEntity savedEntity = userRepository.save(entity);
         return userMapper.toDTO(savedEntity);
     }
 
-    // Buscar usuario por ID
     public Optional<UserDTO> findById(Integer id) {
         return userRepository.findById(id)
                 .map(userMapper::toDTO);
     }
 
-    // Listar todos los usuarios
     public List<UserDTO> findAll() {
         List<UserEntity> entities = userRepository.findAll();
         return userMapper.toDTOList(entities);
     }
 
-    // Actualizar usuario
     public Optional<UserDTO> update(Integer id, UserUpdateDTO updateDTO) {
         return userRepository.findById(id)
                 .map(existingEntity -> {
@@ -49,7 +45,6 @@ public class UserDAO {
                 });
     }
 
-    // Eliminar usuario por ID
     public boolean deleteById(Integer id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
@@ -59,7 +54,7 @@ public class UserDAO {
     }
     public Optional<UserDTO> login(String email, String contrasena) {
         return userRepository.findByEmail(email)
-                .filter(user -> user.getContrasena().equals(contrasena)) // aquí deberías usar encriptación
+                .filter(user -> user.getContrasena().equals(contrasena))
                 .map(userMapper::toDTO);
     }
 }

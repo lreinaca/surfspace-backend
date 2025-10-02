@@ -8,24 +8,24 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Datos para actualizar un usuario existente")
+@Schema(description = "Datos para actualizar un usuario")
 public class UserUpdateDTO {
 
     @Schema(description = "ID del usuario a actualizar", example = "1", required = true)
     private Integer idUsuario;
 
-    @Schema(description = "Nombre completo del usuario", example = "Ana María")
+    @Schema(description = "Nombre del usuario", example = "Ana María")
     private String nombre;
 
-    @Schema(description = "Correo electrónico del usuario", example = "ana.maria@email.com")
+    @Schema(description = "Correo electrónico", example = "ana.maria@email.com")
     private String email;
 
-    @Schema(description = "Contraseña del usuario (se almacenará encriptada)", example = "NuevaClaveSegura123", required = false)
+    @Schema(description = "Contraseña del usuario", example = "NuevaClaveSegura123", required = false)
     private String contrasena;
 
-    @Schema(description = "Teléfono del usuario", example = "3109876543")
+    @Schema(description = "Teléfono", example = "3109876543")
     private String telefono;
 
-    @Schema(description = "Rol del usuario (ej: ADMIN, USUARIO, VISITANTE)", example = "USUARIO")
+    @Schema(description = "Rol del usuario (ADMIN, USUARIO)", example = "USUARIO")
     private String rol;
 }

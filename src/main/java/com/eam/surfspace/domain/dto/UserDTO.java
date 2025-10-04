@@ -22,6 +22,6 @@ public class UserDTO {
     @Schema(description = "Número de teléfono", example = "3103768461", required = true)
     private String telefono;
 
-    @Schema(description = "Rol", example = "ADMIN", required = true)
+    @Schema(description = "Rol", example = "MIEMBRO", required = true)
     private String rol;
 }

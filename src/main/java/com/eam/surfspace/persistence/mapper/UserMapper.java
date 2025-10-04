@@ -12,18 +12,16 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.WARN
 )
 public interface UserMapper {
-
     List<UserDTO> toDTOList(List<UserEntity> entities);
 
-    @Mapping(target = "idUsuario", ignore = true)
+    @Mapping(source = "idUsuario", target = "id")
+    UserDTO toDTO(UserEntity entity);
 
+    @Mapping(target = "idUsuario", ignore = true)
     UserEntity toEntity(UserCreateDTO createDTO);
 
     void updateEntityFromDTO(UserUpdateDTO updateDTO, @MappingTarget UserEntity entity);
-
-    UserDTO toDTO(UserEntity entity);
 }
-
 
 
 

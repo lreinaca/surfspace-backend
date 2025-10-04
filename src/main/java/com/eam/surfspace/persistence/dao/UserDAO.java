@@ -16,12 +16,24 @@ public class UserDAO {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private boolean validRol(String rol) {
+        if (rol == null) return false;
+        String r = rol.trim().toUpperCase();
+        return r.equals("MIEMBRO") || r.equals("USUARIO");
+    }
 
     public UserDTO save(UserCreateDTO createDTO) {
         if (userRepository.existsByEmail(createDTO.getEmail())) {
             throw new IllegalArgumentException("Este correo ya está registrado.");
         }
+
+        String rolToSet = createDTO.getRol() == null ? "USUARIO" : createDTO.getRol().trim().toUpperCase();
+        if (!validRol(rolToSet)) {
+            throw new IllegalArgumentException("Rol inválido. Solo se permite 'MIEMBRO' o 'USUARIO'.");
+        }
+
         UserEntity entity = userMapper.toEntity(createDTO);
+        entity.setRol(rolToSet);
         UserEntity savedEntity = userRepository.save(entity);
         return userMapper.toDTO(savedEntity);
     }
@@ -35,11 +47,27 @@ public class UserDAO {
         List<UserEntity> entities = userRepository.findAll();
         return userMapper.toDTOList(entities);
     }
-
     public Optional<UserDTO> update(Integer id, UserUpdateDTO updateDTO) {
         return userRepository.findById(id)
                 .map(existingEntity -> {
-                    userMapper.updateEntityFromDTO(updateDTO, existingEntity);
+                    updateDTO.setIdUsuario(null);
+                    updateDTO.setRol(null);
+                    if (updateDTO.getNombre() != null && !updateDTO.getNombre().isBlank()) {
+                        existingEntity.setNombre(updateDTO.getNombre());
+                    }
+
+                    if (updateDTO.getEmail() != null && !updateDTO.getEmail().isBlank()) {
+                        existingEntity.setEmail(updateDTO.getEmail());
+                    }
+
+                    if (updateDTO.getTelefono() != null && !updateDTO.getTelefono().isBlank()) {
+                        existingEntity.setTelefono(updateDTO.getTelefono());
+                    }
+
+                    if (updateDTO.getContrasena() != null && !updateDTO.getContrasena().isBlank()) {
+                        existingEntity.setContrasena(updateDTO.getContrasena());
+                    }
+
                     UserEntity updatedEntity = userRepository.save(existingEntity);
                     return userMapper.toDTO(updatedEntity);
                 });
@@ -52,6 +80,7 @@ public class UserDAO {
         }
         return false;
     }
+
     public Optional<UserDTO> login(String email, String contrasena) {
         return userRepository.findByEmail(email)
                 .filter(user -> user.getContrasena().equals(contrasena))

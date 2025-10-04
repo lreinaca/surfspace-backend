@@ -4,7 +4,6 @@ import com.eam.surfspace.domain.dto.MembershipCreateDTO;
 import com.eam.surfspace.domain.dto.MembershipDTO;
 import com.eam.surfspace.domain.dto.MembershipUpdateDTO;
 import com.eam.surfspace.persistence.entity.MembershipEntity;
-import com.eam.surfspace.persistence.entity.MembershipStatus;
 import com.eam.surfspace.persistence.entity.UserEntity;
 import org.mapstruct.*;
 

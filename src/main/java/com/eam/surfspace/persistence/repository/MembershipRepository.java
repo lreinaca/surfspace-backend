@@ -9,33 +9,27 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Repository
 public interface MembershipRepository extends JpaRepository<MembershipEntity, Integer> {
-
-
     long countByIdUsuario_IdUsuarioAndEstado(Integer idUsuario, MembershipStatus estado);
 
-
-
     @Query("SELECT COUNT(m) > 0 FROM MembershipEntity m " +
-            "WHERE m.idUsuario= :idUsuario " +
+            "WHERE m.idUsuario.idUsuario = :idUsuario " +
             "AND m.estado = 'ACTIVA' " +
             "AND m.fechaInicio <= :fechaInicio " +
             "AND m.fechaFin >= :fechaFin")
     boolean hasActiveMembershipInRange(@Param("idUsuario") Integer idUsuario,
                                        @Param("fechaInicio") LocalDate fechaInicio ,
                                        @Param("fechaFin") LocalDate fechaFin);
+
+    // Nuevos:
+    @Query("SELECT m FROM MembershipEntity m WHERE m.estado = 'ACTIVA' AND m.fechaFin < :now")
+    List<MembershipEntity> findExpiredActive(@Param("now") LocalDate now);
 }
 
 
 
-
-
-//    List<MembershipEntity> findByStatus(MembershipStatus status);
-//
-//    List<MembershipEntity> findByEndDateBefore(LocalDate date);
-//
-//    List<MembershipEntity> findByUserEntityIdAndStatus(Integer userId, MembershipStatus status);
 
 
 

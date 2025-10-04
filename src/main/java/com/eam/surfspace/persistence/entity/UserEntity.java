@@ -16,12 +16,12 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario",nullable = false)
-    private int idUsuario;
+    private Integer idUsuario;
 
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String rol;
 
-    @OneToMany(mappedBy = "idUsuario")
+    @OneToMany(mappedBy = "idUsuario", cascade = CascadeType.ALL)
     private List<MembershipEntity> memberships;
 
     @OneToMany(mappedBy = "usuario")

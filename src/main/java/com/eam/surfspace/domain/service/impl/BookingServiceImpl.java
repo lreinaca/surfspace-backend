@@ -6,13 +6,15 @@ import com.eam.surfspace.domain.service.BookingService;
 import com.eam.surfspace.domain.service.MembershipService;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -122,6 +124,17 @@ public class BookingServiceImpl implements BookingService {
         if (start.isBefore(now.plusHours(12))) {
             throw new IllegalArgumentException("La reserva solo puede modificarse hasta 12 horas antes de la hora de inicio");
         }
+    }
+
+    /***
+     * Obtener todas las reservas
+     * @return Lista de reservas
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookings() {
+        log.debug("Retrieving all bookings");
+        return null; // bookingDAO.findAll();
     }
 
 

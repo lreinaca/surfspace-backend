@@ -15,14 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController // recibe y contesta peticiones de tipo rest http
 @RequestMapping("/api/bookings") // para acceder al controlador desde una ruta http
 @RequiredArgsConstructor
 @Tag(name = "Bookings", description = "API for Booking Management in the Coworking Space " +
         "Each client can have multiple bookings.")
-@CrossOrigin(origins = "*")
-// sino pongo esto no puede recibir ninguna petición , no sabe a quien escuchar , se cambia cuando empecemos el frontend , ponemos aca la url
+@CrossOrigin(origins = "*") // sino pongo esto no puede recibir ninguna petición , no sabe a quien escuchar , se cambia cuando empecemos el frontend , ponemos aca la url
 
 public class BookingController {
 
@@ -52,17 +53,25 @@ public class BookingController {
         }
     }
 
-    // READ ALL
+    /***
+     * READ ALL
+     * Get all bookings
+     * Retrieve a list of all bookings in the coworking space
+     * @return List of bookings
+     */
     @GetMapping
     @Operation(summary = "Get all bookings",
             description = "Retrieve a list of all bookings in the coworking space")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of bookings retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "No bookings found")
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<BookingEntity> getAllBookings() {
-        // TODO: implement logic
-        return null;
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+        log.debug("GET /api/bookings - Retrieving all bookings");
+
+        List<BookingResponseDTO> bookings = bookingService.getAllBookings();
+        log.debug("Se encontraron {} bookings", bookings.size());
+        return ResponseEntity.ok(bookings);
     }
 
     // READ BY ID

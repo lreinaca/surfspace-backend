@@ -14,6 +14,8 @@ public interface BookingService {
 
     List<BookingResponseDTO> getAllBookings();
 
+    BookingResponseDTO getBookingById(Integer id);
+
 
 
 

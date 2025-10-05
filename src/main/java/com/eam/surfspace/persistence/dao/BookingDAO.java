@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,6 +33,19 @@ public class BookingDAO {
         BookingEntity bookingToSave = bookingMapper.toBooking(bookingRequestDTO);
         BookingEntity bookingSaved =  bookingRepository.save(bookingToSave);
         return bookingMapper.toBookingDto(bookingSaved);
+    }
+
+    // READ ALL
+    public List<BookingResponseDTO> findAll() {
+        List<BookingEntity> bookings = bookingRepository.findAll();
+        return bookingMapper.toBookingsDto(bookings);
+
+    }
+
+    // READ BY ID
+    public Optional<BookingResponseDTO> findById(Integer id) {
+        return bookingRepository.findById(id)
+                .map(bookingMapper::toBookingDto);
     }
 
 

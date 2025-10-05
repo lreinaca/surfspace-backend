@@ -81,15 +81,26 @@ public class BookingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Booking retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Booking not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<BookingEntity> getBookingById(
+    public ResponseEntity<BookingResponseDTO> getBookingById(
             @PathVariable
-            @Parameter(description = "Booking identifier", required = true)
-            Long id) {
-        // TODO: implement logic
-        return null;
+            @Parameter(description = "Booking identifier", required = true, example = "1")
+            Integer id) {
+            log.debug("GET /api/bookings by ID {}", id);
+            try {
+                BookingResponseDTO booking = bookingService.getBookingById(id);
+                if (booking != null) {
+                    log.debug("Booking found: {}", booking);
+                    return ResponseEntity.ok(booking);
+                } else {
+                    log.warn("Booking with ID {} not found", id);
+                    return ResponseEntity.notFound().build();
+                }
+            } catch (IllegalArgumentException e) {
+                log.warn("Error retrieving booking: {}", e.getMessage());
+                return ResponseEntity.badRequest().build();
+            }
     }
 
     // UPDATE

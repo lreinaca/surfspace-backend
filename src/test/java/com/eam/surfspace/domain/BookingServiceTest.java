@@ -1,3 +1,5 @@
+package com.eam.surfspace.domain;
+
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;

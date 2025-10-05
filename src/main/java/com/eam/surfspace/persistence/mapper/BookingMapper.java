@@ -10,7 +10,7 @@ import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
 
-// convierte de un tipo de elmento a otro, es mapear de entidades a dtos y visceversa
+// convierte de un tipo de elemento a otro, es mapear de entidades a dtos y visceversa
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.WARN
@@ -38,6 +38,11 @@ public interface BookingMapper {
     static EnumBookingStatus stringToEnum(String status) {
         return status != null ? EnumBookingStatus.valueOf(status.toUpperCase()) : null;
     }
+
+    // --- List Converters ---
+    java.util.List<BookingResponseDTO> toBookingsDto(java.util.List<BookingEntity>
+    bookings);
+
 
 }
 

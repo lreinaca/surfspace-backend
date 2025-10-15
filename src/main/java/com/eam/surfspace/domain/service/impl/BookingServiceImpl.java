@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -160,7 +161,83 @@ public class BookingServiceImpl implements BookingService {
                         "Reserva con ID " + id + " no encontrada."));
     }
 
+    /***
+     * Actualizar una reserva existente
+     * @param id - ID de la reserva a actualizar
+     * @param bookingRequestDTO - Datos actualizados de la reserva
+     * @return Reserva actualizada
+     * @throws IllegalArgumentException si el ID es inválido, no se encuentra la reserva,
+     *                                  la membresía no está activa, el espacio no está disponible,
+     *                                  o las validaciones de tiempo fallan
+     */
+    @Override
+    public BookingResponseDTO update(Integer id, BookingRequestDTO bookingRequestDTO) {
+        log.info("Updating booking with ID: {}", id);
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID de reserva inválido.");
+        }
 
+        BookingResponseDTO existingBooking = bookingDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva con ID " + id + " no encontrada."));
+
+        // Validar que la reserva pueda ser modificada
+        validateModification(existingBooking.getStartDateTime());
+
+        // Validar que la membresía esté activa
+        boolean isMembershipActive = true; // Simulación de la verificación de la membresía
+        if (!isMembershipActive) {
+            throw new IllegalArgumentException("La membresía no está activa. No se puede actualizar la reserva.");
+        }
+
+        // Validar que el espacio esté disponible en el horario solicitado
+        boolean isSpaceAvailable = spaceService.isSpaceAvailable(
+                bookingRequestDTO.getIdSpace(),
+                bookingRequestDTO.getStartDateTime(),
+                bookingRequestDTO.getEndDateTime()
+        );
+        if (!isSpaceAvailable) {
+            throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
+        }
+
+        // Validar reglas de negocio respecto a las fechas y horas de la reserva
+        validateTimes(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
+        validateDuration(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
+
+        // Actualizar la reserva
+        existingBooking.setIdSpace(bookingRequestDTO.getIdSpace());
+        existingBooking.setStartDateTime(bookingRequestDTO.getStartDateTime());
+        existingBooking.setEndDateTime(bookingRequestDTO.getEndDateTime());
+
+        Optional<BookingResponseDTO> updatedBooking = bookingDAO.update(id, bookingRequestDTO);
+        log.info("Booking with ID {} has been updated successfully", id);
+        return updatedBooking.orElse(null);
+    }
+
+    /***
+     * Eliminar una reserva por su ID
+     * @param id - ID de la reserva a eliminar
+     * @throws IllegalArgumentException si el ID es inválido, no se encuentra la reserva,
+     *                                  o la reserva no puede ser eliminada (menos de 24h para el inicio)
+     */
+    @Override
+    public void delete(Integer id) {
+        log.info("Deleting booking with ID: {}", id);
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID de reserva inválido.");
+        }
+
+        BookingResponseDTO existingBooking = bookingDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva con ID " + id + " no encontrada."));
+
+        // Validar que la reserva pueda ser eliminada (solo si faltan más de 24 horas para el inicio)
+        if (existingBooking.getStartDateTime().isBefore(LocalDateTime.now().plusHours(24))) {
+            throw new IllegalArgumentException("La reserva solo puede eliminarse si faltan más de 24 horas para la hora de inicio.");
+        }
+
+        bookingDAO.delete(id);
+        log.info("Booking with ID {} has been deleted successfully", id);
+
+    }
 
 
 

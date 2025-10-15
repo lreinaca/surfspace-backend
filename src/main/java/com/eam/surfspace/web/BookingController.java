@@ -30,6 +30,13 @@ public class BookingController {
     private final BookingService bookingService;
 
     // CREATE
+    /***
+     * Create a new booking
+     * Create a new booking for a client in the coworking space
+     * Each booking is associated with a client and includes details such as date, time, and workspace.
+     * @param booking Booking data
+     * @return Created booking
+     */
     @PostMapping
     @Operation(summary = "Create a new booking",
             description = "Create a new booking for a client in the coworking space" +
@@ -75,6 +82,12 @@ public class BookingController {
     }
 
     // READ BY ID
+    /***
+     * Get booking by ID
+     * Retrieve a specific booking by its ID
+     * @param id Booking identifier
+     * @return Booking details
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get booking by ID",
             description = "Retrieve a specific booking by its ID")
@@ -113,14 +126,20 @@ public class BookingController {
             @ApiResponse(responseCode = "404", description = "Booking not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<BookingEntity> updateBooking(
+    public ResponseEntity<BookingResponseDTO> updateBooking(
             @PathVariable @Parameter(description = "Booking identifier", required = true)
-            Long id,
+            Integer id,
             @RequestBody @Parameter(description = "Updated booking data", required = true)
-            BookingEntity booking) {
-        // TODO: implement logic
-        return null;
-
+            BookingRequestDTO booking) {
+            log.info("PUT /api/bookings/{} - Actualizando reserva", id);
+            try {
+                BookingResponseDTO updatedBooking = bookingService.update(id, booking);
+                log.info("Booking updated: {}", updatedBooking);
+                return  ResponseEntity.ok(updatedBooking);
+            }catch (RuntimeException e){
+                log.warn("Error updating booking: {}", e.getMessage());
+                return ResponseEntity.badRequest().build();
+            }
     }
 
     // DELETE
@@ -135,9 +154,17 @@ public class BookingController {
     })
     public ResponseEntity<Void> deleteBooking(
             @PathVariable @Parameter(description = "Booking identifier", required = true)
-            Long id) {
-        // TODO: implement logic
-        return null;
+            Integer id) {
+             log.info("DELETE /api/bookings/{} - Deleting booking", id);
+             try {
+                 bookingService.delete(id);
+                    log.info("Booking with ID {} deleted successfully", id);
+                    return ResponseEntity.noContent().build();
+             }catch (RuntimeException e){
+                    log.warn("Error deleting booking: {}", e.getMessage());
+                    return ResponseEntity.notFound().build();
+             }
+
     }
 
 

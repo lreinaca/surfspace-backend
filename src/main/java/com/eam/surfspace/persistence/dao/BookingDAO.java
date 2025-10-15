@@ -48,6 +48,33 @@ public class BookingDAO {
                 .map(bookingMapper::toBookingDto);
     }
 
+    // UPDATE
+    public Optional<BookingResponseDTO> update(Integer id, BookingRequestDTO bookingRequestDTO)
+    {
+        return bookingRepository.findById(id)
+                .map(existingBooking -> {
+                    if (existsBySpaceIdAndTimeOverlap(bookingRequestDTO.getIdSpace(),
+                            bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime())) {
+                        throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
+                    }
+                    existingBooking.setIdSpace(bookingRequestDTO.getIdSpace());
+                    existingBooking.setStartDateTime(bookingRequestDTO.getStartDateTime());
+                    existingBooking.setEndDateTime(bookingRequestDTO.getEndDateTime());
+                    BookingEntity updatedBooking = bookingRepository.save(existingBooking);
+                    return bookingMapper.toBookingDto(updatedBooking);
+                });
+    }
+
+    // DELETE
+    public boolean delete(Integer id) {
+        if (bookingRepository.existsById(id)) {
+            bookingRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 
 

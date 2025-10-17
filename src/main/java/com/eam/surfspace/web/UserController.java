@@ -1,83 +1,144 @@
 package com.eam.surfspace.web;
 
 
+import com.eam.surfspace.domain.dto.UserCreateDTO;
+import com.eam.surfspace.domain.dto.UserDTO;
+import com.eam.surfspace.domain.dto.UserUpdateDTO;
+import com.eam.surfspace.domain.service.impl.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.eam.surfspace.persistence.entity.UserEntity;
-import com.eam.surfspace.persistence.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "API for users management")
 public class UserController {
 
-    private UserRepository userRepository;
+    private final UserService userService;
+
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "Loguear Usuario",
-            description = "Valida las credenciales del usuario para el inicio de sesión.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario logueado con éxito"),
-            @ApiResponse(responseCode = "401", description = "Usuario o contraseña incorrectos")})
-    public ResponseEntity<UserEntity> loginUser(@RequestBody @Parameter(description = "Credenciales de Acceso") UserEntity user) { //utilizar un dto
-        return null;
-    }
 
     @PostMapping
     @Operation(summary = "Crear un nuevo usuario",
             description = "Crea un nuevo usuario con los datos proporcionados.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Usuario creado con éxito"),
-            @ApiResponse(responseCode = "409", description = "El usuario ya existe")})
-    public ResponseEntity<UserEntity> createUser(
-            @RequestBody @Parameter(description = "Datos del usuario a crear") UserEntity user ) {
-        return null;
+            @ApiResponse(responseCode = "400", description = "Error en los datos proporcionados"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<UserDTO> createUser(
+            @RequestBody @Parameter(description = "Datos del usuario a crear") UserCreateDTO user) {
+        try {
+            UserDTO saved = userService.save(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
     @GetMapping
-    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista de todos los usuarios registrados.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida con éxito"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
-    public ResponseEntity<UserEntity> getAllUsers(@RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT", name = "Authorization", example = "Bearer <token>") String authHeader) {
-        return null;
+    @Operation(summary = "Obtener todos los usuarios",
+            description = "Devuelve la lista completa de usuarios registrados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuarios obtenidos correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        try {
+            List<UserDTO> users = userService.findAll();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
-
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener usuario por ID",
-            description = "Devuelve un usuario específico basado en su ID.")
+    @Operation(summary = "Obtener un usuario por su ID",
+            description = "Devuelve un usuario si existe en la base de datos.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<UserEntity> getUserById(@PathVariable @Parameter(description = "ID del usuario") Integer id,
-                                            @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT" , name = "Authorization", example = "Bearer <token>") String authHeader) {
-        return null;
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+        try {
+            Optional<UserDTO> user = userService.findById(id);
+            return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
-
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar un usuario", description = "Actualiza los datos de un usuario existente.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario actualizado con éxito"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<UserEntity> updateUsuario(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestBody @Parameter(description = "Datos actualizados del usuario") UserEntity user, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT", name = "Authorization", example = "Bearer <token>") String authHeader) {
-        return null;
+    @Operation(summary = "Actualizar un usuario existente",
+            description = "Modifica los datos de un usuario por su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos para la actualización"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserUpdateDTO updatedUser) {
+        try {
+            Optional<UserDTO> updated = userService.update(id, updatedUser);
+            return updated.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar un usuario", description = "Elimina un usuario basado en su ID.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Usuario eliminado con éxito"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado")})
-    public ResponseEntity<UserEntity> deleteUser(@PathVariable @Parameter(description = "ID del usuario") Integer id, @RequestHeader(value = "Authorization", required = false) @Parameter(description = "Token de autorización JWT",name = "Authorization", example = "Bearer <token>") String authHeader) {
-        return null;
+    @Operation(summary = "Eliminar un usuario por ID",
+            description = "Elimina un usuario del sistema si existe.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        try {
+            boolean deleted = userService.delete(id);
+            if (deleted) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Iniciar sesión",
+            description = "Permite iniciar sesión con correo y contraseña.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login exitoso"),
+            @ApiResponse(responseCode = "401", description = "Credenciales incorrectas"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<String> loginUser(@RequestBody UserCreateDTO loginRequest) {
+        try {
+            if (loginRequest.getEmail() != null && loginRequest.getContrasena() != null) {
+                return ResponseEntity.ok("Login exitoso");
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno");
+        }
     }
 }

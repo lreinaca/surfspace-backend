@@ -3,6 +3,7 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
+import com.eam.surfspace.domain.service.MembershipService;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
 import lombok.RequiredArgsConstructor;

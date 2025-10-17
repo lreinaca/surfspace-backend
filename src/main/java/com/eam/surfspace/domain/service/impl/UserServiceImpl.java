@@ -2,6 +2,7 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.UserCreateDTO;
 import com.eam.surfspace.domain.dto.UserDTO;
 import com.eam.surfspace.domain.dto.UserUpdateDTO;
+import com.eam.surfspace.domain.service.UserService;
 import com.eam.surfspace.persistence.dao.UserDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Override

@@ -1,4 +1,4 @@
-package com.eam.surfspace.domain.service.impl;
+package com.eam.surfspace.domain.service;
 
 import com.eam.surfspace.domain.dto.MembershipCreateDTO;
 import com.eam.surfspace.domain.dto.MembershipDTO;

@@ -4,6 +4,7 @@ import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
 import com.eam.surfspace.domain.service.MembershipService;
+import com.eam.surfspace.domain.service.NotificationService;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingDAO bookingDAO;
     private final MembershipService membershipService; // Servicio para validar membresía
     private final SpaceService spaceService;
+    private final NotificationService notificationService;
 
     @Override
     public BookingResponseDTO save(BookingRequestDTO bookingRequestDTO) {
@@ -60,6 +62,9 @@ public class BookingServiceImpl implements BookingService {
         // Crear reseeva
         BookingResponseDTO bookingResponseDTO = bookingDAO.save(bookingRequestDTO);
         log.info("Booking has been saved successfully");
+
+        // Enviar notificacion de confirmación
+        notificationService.sendConfirmation(bookingResponseDTO.getBookingId());
 
         return bookingResponseDTO;
     }

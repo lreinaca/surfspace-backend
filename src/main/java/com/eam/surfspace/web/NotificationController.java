@@ -1,17 +1,21 @@
 package com.eam.surfspace.web;
 
+import com.eam.surfspace.domain.dto.NotificationDTO;
 import com.eam.surfspace.domain.service.NotificationService;
-import com.eam.surfspace.persistence.entity.NotificationEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/notifications")
 @Tag(name = "Notifications", description = "API for Notification Management in the Coworking Space " +
@@ -31,16 +35,12 @@ public class NotificationController {
             description = "Retrieve a list of all notifications sent to clients in the coworking space")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of notifications retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "No notifications found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<NotificationEntity> getAllNotifications() {
-        // TODO: implement logic
-        return null;
+    public ResponseEntity<List<NotificationDTO>> getAllNotifications() {
+       log.debug ("GET / /api/notifications - Retrieving all notifications");
+        List<NotificationDTO> notifications = notificationService.getAllNotifications();
+        return ResponseEntity.ok(notifications);
     }
-
-
-
 
 }

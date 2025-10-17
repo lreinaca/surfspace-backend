@@ -3,7 +3,6 @@ package com.eam.surfspace.web;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
-import com.eam.surfspace.persistence.entity.BookingEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

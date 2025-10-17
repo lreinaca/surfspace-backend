@@ -36,7 +36,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDTO save(BookingRequestDTO bookingRequestDTO) {
         log.info("Create a new booking for a client in the coworking space {}",
                 bookingRequestDTO.getIdMembership());
-        // TODO
+
+        // TODO : Validar que la membresía esté activa
         // Aqui debo llamar el método para validar que la membresia esté activa
             // traer el metodo desde el servicio de membresia (MembershipService)
         boolean isMembershipActive = true; // Simulación de la verificación de la membresía
@@ -59,12 +60,9 @@ public class BookingServiceImpl implements BookingService {
         validateTimes(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
         validateDuration(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
 
-        // Crear reseeva
+        // Crear reserva
         BookingResponseDTO bookingResponseDTO = bookingDAO.save(bookingRequestDTO);
         log.info("Booking has been saved successfully");
-
-        // Enviar notificacion de confirmación
-        notificationService.sendConfirmation(bookingResponseDTO.getBookingId());
 
         return bookingResponseDTO;
     }

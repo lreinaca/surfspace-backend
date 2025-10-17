@@ -9,7 +9,6 @@ import com.eam.surfspace.persistence.mapper.NotificationMapper;
 import com.eam.surfspace.persistence.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,12 +31,13 @@ public class NotificationDAO {
         return notificationMapper.toDtoList(entities);
     }
 
-    public boolean existsByConfirmationCode(String code) {
-        return notificationRepository.existsByBookingConfirmationCode(code);
+    public boolean existsByConfirmationCode(Integer bookingId) {
+        return notificationRepository.existsByBookingConfirmationCode(bookingId);
     }
 
-    public long countByConfirmationCodeStartingWith(String prefix) {
-        return notificationRepository.countByBookingConfirmationCodeStartingWith(prefix);
+    public long countByConfirmationCodeStartingWith(Integer bookingId) {
+
+        return notificationRepository.countByBookingConfirmationCodeStartingWith(bookingId);
     }
 
     // Para los recordatorios de reservas 24 horas antes de la reserva
@@ -50,11 +50,8 @@ public class NotificationDAO {
         List<BookingEntity> entities = notificationRepository.findBookingsNeedingReminder(start, end);
         return bookingMapper.toBookingsDto(entities);
     }
-    // Para los avisos de vencimiento de pago una hora antes del vencimiento
-    // cutoffTime es "ahora", buscamos reservas creadas hace más de 1 hora
-    // que aún están pendientes de pago.
-    public List<BookingResponseDTO> findBookingsWithPaymentDue(LocalDateTime cutoffTime) {
-        LocalDateTime cutoff = cutoffTime.minusHours(1);
+
+    public List<BookingResponseDTO> findBookingsWithPaymentDue(LocalDateTime cutoff) {
         List<BookingEntity> entities = notificationRepository.findBookingsWithPaymentDue(cutoff);
         return bookingMapper.toBookingsDto(entities);
     }

@@ -33,7 +33,7 @@ public class MembershipDAO {
             UserEntity u = m.getIdUsuario();
             if (u != null) {
                 userRepository.findById(u.getIdUsuario()).ifPresent(user -> {
-                    user.setRol("USUARIO");
+                    user.setRol("VISITANTE");
                     userRepository.save(user);
                 });
             }
@@ -56,9 +56,9 @@ public class MembershipDAO {
             entity.setFechaInicio(LocalDate.now());
         }
         if (entity.getFechaFin() == null) {
-            entity.setFechaFin(entity.getFechaInicio().plusMonths(2));
+            entity.setFechaFin(entity.getFechaInicio().plusMonths(12));
         } else {
-            entity.setFechaFin(entity.getFechaInicio().plusMonths(2));
+            entity.setFechaFin(entity.getFechaInicio().plusMonths(12));
         }
 
         entity.setEstado(MembershipStatus.ACTIVA);
@@ -68,7 +68,7 @@ public class MembershipDAO {
         UserEntity userRef = savedEntity.getIdUsuario();
         if (userRef != null) {
             userRepository.findById(userRef.getIdUsuario()).ifPresent(user -> {
-                user.setRol("MIEMBRO");
+                user.setRol("AFILIADO");
                 userRepository.save(user);
             });
         }
@@ -98,7 +98,7 @@ public class MembershipDAO {
                         UserEntity u = existingEntity.getIdUsuario();
                         if (u != null) {
                             userRepository.findById(u.getIdUsuario()).ifPresent(user -> {
-                                user.setRol("USUARIO");
+                                user.setRol("VISITANTE");
                                 userRepository.save(user);
                             });
                         }
@@ -107,7 +107,7 @@ public class MembershipDAO {
                         UserEntity u = existingEntity.getIdUsuario();
                         if (u != null) {
                             userRepository.findById(u.getIdUsuario()).ifPresent(user -> {
-                                user.setRol("MIEMBRO");
+                                user.setRol("AFILIADO");
                                 userRepository.save(user);
                             });
                         }
@@ -124,7 +124,7 @@ public class MembershipDAO {
                     UserEntity u = m.getIdUsuario();
                     if (u != null) {
                         userRepository.findById(u.getIdUsuario()).ifPresent(user -> {
-                            user.setRol("USUARIO");
+                            user.setRol("VISITANTE");
                             userRepository.save(user);
                         });
                     }

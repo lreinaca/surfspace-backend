@@ -19,7 +19,7 @@ public class UserDAO {
     private boolean validRol(String rol) {
         if (rol == null) return false;
         String r = rol.trim().toUpperCase();
-        return r.equals("MIEMBRO") || r.equals("USUARIO");
+        return r.equals("AFILIADO") || r.equals("VISITANTE") || r.equals("ADMINISTRADOR");
     }
 
     public UserDTO save(UserCreateDTO createDTO) {
@@ -29,7 +29,7 @@ public class UserDAO {
 
         String rolToSet = createDTO.getRol() == null ? "USUARIO" : createDTO.getRol().trim().toUpperCase();
         if (!validRol(rolToSet)) {
-            throw new IllegalArgumentException("Rol inválido. Solo se permite 'MIEMBRO' o 'USUARIO'.");
+            throw new IllegalArgumentException("Rol inválido. Solo se permite 'AFILIADO' o 'VISITANTE' o 'ADMINISTRADOR'.");
         }
 
         UserEntity entity = userMapper.toEntity(createDTO);

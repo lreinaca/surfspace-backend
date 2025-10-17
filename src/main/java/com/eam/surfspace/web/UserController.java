@@ -4,7 +4,7 @@ package com.eam.surfspace.web;
 import com.eam.surfspace.domain.dto.UserCreateDTO;
 import com.eam.surfspace.domain.dto.UserDTO;
 import com.eam.surfspace.domain.dto.UserUpdateDTO;
-import com.eam.surfspace.domain.service.impl.UserService;
+import com.eam.surfspace.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

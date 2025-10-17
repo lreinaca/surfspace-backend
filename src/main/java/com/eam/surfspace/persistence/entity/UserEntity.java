@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -13,13 +14,14 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario",nullable = false)
-    private int idUsuario;
+    private Integer idUsuario;
 
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -32,14 +34,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String rol;
 
-    /*
-    @OneToMany(mappedBy = "usuario")
-    private List<MembershipEntity> membership;
+    @OneToMany(mappedBy = "idUsuario", cascade = CascadeType.ALL)
+    private List<MembershipEntity> memberships;
 
     @OneToMany(mappedBy = "usuario")
-    private List<bookingEntity> booking;
-
-    @OneToMany(mappedBy = "usuario")
-    private List<NotificationEntity> notification;
-    */
+    private List<NotificationEntity> notifications;
 }

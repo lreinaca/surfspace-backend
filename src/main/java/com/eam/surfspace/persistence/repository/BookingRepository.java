@@ -21,5 +21,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
     boolean existsBySpaceIdAndTimeOverlap(@Param("spaceId") Integer spaceId,
                                           @Param("startDateTime") LocalDateTime startDateTime,
                                           @Param("endDateTime") LocalDateTime endDateTime);
+
+
 }
 

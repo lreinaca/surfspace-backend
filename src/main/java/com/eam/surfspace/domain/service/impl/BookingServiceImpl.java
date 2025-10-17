@@ -3,16 +3,19 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
-import com.eam.surfspace.domain.service.MembershipService;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,10 +40,13 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("La membresía no está activa. No se puede crear la reserva.");
         }
 
-        // TODO
-        // Aqui debo llamar el método para validar que el espacio a reservar esté disponible
-            //
-        boolean isSpaceAvailable = true; // Simulación de la verificación de disponibilidad del espacio
+        // Validar que el espacio esté disponible en el horario solicitado
+        boolean isSpaceAvailable = spaceService.isSpaceAvailable(
+                bookingRequestDTO.getIdSpace(),
+                bookingRequestDTO.getStartDateTime(),
+                bookingRequestDTO.getEndDateTime()
+
+        );
         if (!isSpaceAvailable) {
             throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
         }
@@ -123,6 +129,37 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("La reserva solo puede modificarse hasta 12 horas antes de la hora de inicio");
         }
     }
+
+    /***
+     * Obtener todas las reservas
+     * @return Lista de reservas
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookings() {
+        log.debug("Retrieving all bookings");
+        return bookingDAO.findAll();
+    }
+
+    /***
+     * Obtener una reserva por su ID
+     * @param id - ID de la reserva
+     * @return Reserva encontrada
+     * @throws IllegalArgumentException si el ID es inválido o no se encuentra la reserva
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public BookingResponseDTO getBookingById(Integer id) {
+        log.debug("Retrieving booking by ID: {}", id);
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID de reserva inválido.");
+        }
+        return bookingDAO.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Reserva con ID " + id + " no encontrada."));
+    }
+
+
 
 
 

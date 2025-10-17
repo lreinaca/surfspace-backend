@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "membresia")
@@ -14,19 +14,21 @@ import java.util.Date;
 @AllArgsConstructor
 public class MembershipEntity {
     @Id
-    @Column(name = "id_membresia",nullable = false)
-    private int idMembresia;
-    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_membresia", nullable = false)
+    private Integer idMembresia;
+
     @ManyToOne
-    @JoinColumn(name = "id_usuario",nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UserEntity idUsuario;
 
     @Column(name = "fecha_inicio", nullable = false)
-    private Date fehaInicio;
+    private LocalDate fechaInicio;
 
     @Column(name = "fecha_fin", nullable = false)
-    private Date fehaFin;
+    private LocalDate fechaFin;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String estado;
+    private MembershipStatus estado;
 }

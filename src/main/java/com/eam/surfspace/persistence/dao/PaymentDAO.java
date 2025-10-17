@@ -5,6 +5,7 @@ import com.eam.surfspace.persistence.entity.PaymentEntity;
 import com.eam.surfspace.persistence.mapper.PaymentMapper;
 import com.eam.surfspace.persistence.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentDAO {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
@@ -20,6 +22,7 @@ public class PaymentDAO {
     public PaymentDTO save(PaymentDTO paymentDTO){
         PaymentEntity entityPaymentToSave = paymentMapper.toPaymentEntity(paymentDTO);
 
+        log.info("Amount recibido en entidad: {}", entityPaymentToSave.getAmount());
         if(entityPaymentToSave.getAmount() == null) {
             throw new IllegalArgumentException("the mount to pay cannot be null");
         }

@@ -1,6 +1,5 @@
 package com.eam.surfspace.domain.service.impl;
 
-import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.dto.SpaceDTO;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional //si algo falla a mitad, se deshace cambios

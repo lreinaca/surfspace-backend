@@ -48,7 +48,7 @@ public class SpaceController {
         }
     }
 
-    //READ ALL
+    //READ ALL -----------------------------------------------------------------
     @GetMapping
     @Operation(summary = "Get all spaces", description = "Retrieves all spaces in the system")
     @ApiResponses(value ={
@@ -68,7 +68,7 @@ public class SpaceController {
         }
     }
 
-    //READ BY ID
+    //READ BY ID -----------------------------------------------------------------
     @GetMapping("/{id}")
     @Operation(summary = "Get space by ID", description = "Retrieves a space by identifier")
     @ApiResponses(value = {
@@ -91,7 +91,7 @@ public class SpaceController {
         }
     }
 
-    //UPDATE
+    //UPDATE -----------------------------------------------------------------
     @PutMapping("/{idSpace}")
     @Operation(summary = "Update space", description = "Updates an existing space in the system")
     @ApiResponses(value = {
@@ -118,8 +118,8 @@ public class SpaceController {
         }
     }
 
-    //DEACTIVATE
-    @PatchMapping("/{id}")
+    //DEACTIVATE --------------------------------------------------------------------------------
+    @PatchMapping("/{idSpace}")
     @Operation(summary = "Deactivate space", description = "Deactivates a space from the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Space deactivated successfully"),
@@ -128,17 +128,17 @@ public class SpaceController {
     })
     public ResponseEntity<Void> deactivateSpace(
             @Parameter(description = "Space identifier", required = true)
-            @PathVariable int id
+            @PathVariable int idSpace
     ){
-        log.info("PATCH /api/spaces/{} - Deactivating space", id);
+        log.info("PATCH /api/spaces/{} - Deactivating space", idSpace);
 
         try {
-            spaceService.deactivateSpace(id);
+            spaceService.deactivateSpace(idSpace);
             log.info("space deactivated successfully");
             return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            log.warn("Could not deactivate space: {}", e.getMessage());
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error deactivating space: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

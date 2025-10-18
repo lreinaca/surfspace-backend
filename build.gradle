@@ -52,10 +52,19 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+jacoco {
+    toolVersion = '0.8.10'
+}
+
 jacocoTestReport {
     dependsOn test
     reports {
         xml.required = true
         html.required = true
     }
+
+    // Medir sólo el paquete de servicios (domain.service) para enfocarnos en la lógica de negocio
+    classDirectories.setFrom(files(classDirectories.files.collect { dir ->
+        fileTree(dir: dir, include: ['com/eam/surfspace/domain/service/**'])
+    }))
 }

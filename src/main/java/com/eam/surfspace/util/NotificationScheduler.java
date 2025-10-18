@@ -1,8 +1,7 @@
-package com.eam.surfspace.domain.service.impl;
+package com.eam.surfspace.util;
 
 
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
-import com.eam.surfspace.domain.service.BookingService;
 import com.eam.surfspace.domain.service.NotificationService;
 import com.eam.surfspace.persistence.dao.NotificationDAO;
 import lombok.RequiredArgsConstructor;

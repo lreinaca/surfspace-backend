@@ -136,15 +136,13 @@ public class BookingController {
                 BookingResponseDTO updatedBooking = bookingService.update(id, booking);
                 log.info("Booking updated: {}", updatedBooking);
                 return  ResponseEntity.ok(updatedBooking);
-            } catch (RuntimeException e) {
-                if (e.getMessage().contains("not found")) {
-                    log.warn("Booking with ID {} not found: {}", id, e.getMessage());
-                    return ResponseEntity.notFound().build();
-                }
+            } catch (IllegalArgumentException e){
                 log.warn("Error updating booking: {}", e.getMessage());
                 return ResponseEntity.badRequest().build();
+            } catch (RuntimeException e) {
+                log.warn("Booking with ID {} not found: {}", id, e.getMessage());
+                return ResponseEntity.notFound().build();
             }
-
     }
 
     // NO se eliminan reservas, solo se les cambia el estado
@@ -162,18 +160,15 @@ public class BookingController {
              log.info("PATCH /api/bookings/{} - Cancelling booking", id);
              try {
                  bookingService.cancelBooking(id);
-                    log.info("Booking with ID {} deleted successfully", id);
+                    log.info("Booking with ID {}  has been cancelled successfully", id);
                     return ResponseEntity.noContent().build();
-             }catch (RuntimeException e){
-                   if (e.getMessage().contains("not found")) {
-                          log.warn("Booking with ID {} not found: {}", id, e.getMessage());
-                          return ResponseEntity.notFound().build();
-                   }
-                   log.warn("Error updating booking: {}", e.getMessage());
-                     return ResponseEntity.badRequest().build();
+             } catch (IllegalArgumentException e){
+                     log.warn("Error updating booking: {}", e.getMessage());
+                        return ResponseEntity.badRequest().build();
              }
-
+             catch (RuntimeException e){
+                    log.warn("Booking with ID {} not found: {}", id, e.getMessage());
+                    return ResponseEntity.notFound().build();
+             }
     }
-
-
 }

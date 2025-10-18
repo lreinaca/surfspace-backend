@@ -190,12 +190,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDTO update(Integer id, BookingRequestDTO bookingRequestDTO) {
         log.info("Updating booking with ID: {}", id);
-        if (id == null || id <= 0) {
+        if (id == null || id <= 0 || id.toString().isEmpty()) {
             throw new IllegalArgumentException("ID de reserva inválido.");
         }
 
         BookingResponseDTO existingBooking = bookingDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva con ID " + id + " no encontrada."));
+                .orElseThrow(() -> new RuntimeException("Reserva con ID " + id + " no encontrada."));
 
         // Validar que la reserva pueda ser modificada
         validateModification(existingBooking.getStartDateTime());
@@ -244,11 +244,11 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingResponseDTO existingBooking = bookingDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva con ID " + id + " no encontrada."));
+                .orElseThrow(() -> new RuntimeException("Reserva con ID " + id + " no encontrada."));
 
         // Validar que la reserva pueda ser cancelada (solo si faltan más de 24 horas para el inicio)
         if (existingBooking.getStartDateTime().isBefore(LocalDateTime.now().plusHours(24))) {
-            throw new IllegalArgumentException("La reserva solo puede eliminarse si faltan más de 24 horas para la hora de inicio.");
+            throw new IllegalArgumentException("La reserva solo puede cancelarse si faltan más de 24 horas para la hora de inicio.");
         }
 
         // Cambiar estado de la reserva a CANCELADA

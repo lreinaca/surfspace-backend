@@ -3,6 +3,7 @@ package com.eam.surfspace.persistence.dao;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.persistence.entity.BookingEntity;
+import com.eam.surfspace.persistence.entity.EnumBookingStatus;
 import com.eam.surfspace.persistence.mapper.BookingMapper;
 import com.eam.surfspace.persistence.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class BookingDAO {
             throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
         }
         BookingEntity bookingToSave = bookingMapper.toBooking(bookingRequestDTO);
+        bookingToSave.setStatus(EnumBookingStatus.PENDIENTE); // Estado inicial
         BookingEntity bookingSaved =  bookingRepository.save(bookingToSave);
         return bookingMapper.toBookingDto(bookingSaved);
     }

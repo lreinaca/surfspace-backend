@@ -346,71 +346,74 @@ public class BookingServiceTest {
     // ========== TESTS PARA EL MÉTODO DELETE ==========
 
     @Test
-    @DisplayName("DELETE - Debe eliminar una reserva cuando faltan más de 24 horas")
+    @DisplayName("CANCEL - Debe cancelar una reserva cuando faltan más de 24 horas")
     void testDeleteBooking_Success() {
         Integer bookingId = 1;
         LocalDateTime farStart = LocalDateTime.now().plusDays(2);
         LocalDateTime farEnd = farStart.plusHours(2);
 
-        BookingResponseDTO bookingToDelete = new BookingResponseDTO(
-                bookingId, membershipId, spaceId, farStart, farEnd, "PENDIENTE"
+        BookingResponseDTO bookingToCancel = new BookingResponseDTO(
+                bookingId, membershipId, spaceId, farStart, farEnd, "CANCELADO"
         );
 
-        when(bookingDAO.findById(bookingId)).thenReturn(Optional.of(bookingToDelete));
-        when(bookingDAO.delete(bookingId)).thenReturn(true);
+        Optional<BookingResponseDTO> optionalBooking = Optional.of(bookingToCancel);
 
-        bookingService.delete(bookingId);
+
+        when(bookingDAO.findById(bookingId)).thenReturn(Optional.of(bookingToCancel));
+        when(bookingDAO.updateStatus(bookingId,bookingToCancel.getStatus())).thenReturn(optionalBooking);
+
+        bookingService.cancelBooking(bookingId);
 
         verify(bookingDAO).findById(bookingId);
-        verify(bookingDAO).delete(bookingId);
+        verify(bookingDAO).updateStatus(bookingId,bookingToCancel.getStatus());
     }
 
     @Test
-    @DisplayName("DELETE - Debe lanzar excepción cuando la reserva no existe")
+    @DisplayName("CANCEL - Debe lanzar excepción cuando la reserva no existe")
     void testDeleteBooking_NotFound() {
         Integer bookingId = 999;
         when(bookingDAO.findById(bookingId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookingService.delete(bookingId))
+        assertThatThrownBy(() -> bookingService.cancelBooking(bookingId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("no encontrada");
 
         verify(bookingDAO).findById(bookingId);
-        verify(bookingDAO, never()).delete(any());
+        verify(bookingDAO, never()).updateStatus(any(), any());
     }
 
     @Test
-    @DisplayName("DELETE - Debe lanzar excepción cuando faltan menos de 24 horas para el inicio")
-    void testDeleteBooking_TooCloseToStart() {
+    @DisplayName("CANCEL - Debe lanzar excepción cuando faltan menos de 24 horas para el inicio")
+    void testCancelBooking_TooCloseToStart() {
         Integer bookingId = 1;
         LocalDateTime soonStart = LocalDateTime.now().plusHours(20);
         LocalDateTime soonEnd = soonStart.plusHours(2);
 
         BookingResponseDTO soonBooking = new BookingResponseDTO(
-                bookingId, membershipId, spaceId, soonStart, soonEnd, "PENDIENTE"
+                bookingId, membershipId, spaceId, soonStart, soonEnd, "CONFIRMADA"
         );
 
         when(bookingDAO.findById(bookingId)).thenReturn(Optional.of(soonBooking));
 
-        assertThatThrownBy(() -> bookingService.delete(bookingId))
+        assertThatThrownBy(() -> bookingService.cancelBooking(bookingId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("24 horas");
 
         verify(bookingDAO).findById(bookingId);
-        verify(bookingDAO, never()).delete(any());
+        verify(bookingDAO, never()).updateStatus(any(), any());
     }
 
     @Test
-    @DisplayName("DELETE - Debe lanzar excepción cuando el ID es inválido")
-    void testDeleteBooking_InvalidId() {
-        assertThatThrownBy(() -> bookingService.delete(null))
+    @DisplayName("CANCEL - Debe lanzar excepción cuando el ID es inválido")
+    void testCancelBooking_InvalidId() {
+        assertThatThrownBy(() -> bookingService.cancelBooking(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("ID de reserva inválido");
 
-        assertThatThrownBy(() -> bookingService.delete(0))
+        assertThatThrownBy(() -> bookingService.cancelBooking(0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("ID de reserva inválido");
 
-        verify(bookingDAO, never()).delete(any());
+        verify(bookingDAO, never()).updateStatus(any(),any());
     }
 }

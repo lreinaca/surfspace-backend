@@ -32,7 +32,7 @@ public interface BookingService {
      * Remove a specific booking from the system using its ID.
      * @param id Booking ID
      */
-    void delete(Integer id);
+    void cancelBooking(Integer id);
 
     /**
      * Get all bookings

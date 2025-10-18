@@ -16,5 +16,6 @@ public interface MembershipService {
     Optional<MembershipDTO> findById(Integer id);
 
     List<MembershipDTO> findAll();
+
     boolean delete(Integer id);
 }

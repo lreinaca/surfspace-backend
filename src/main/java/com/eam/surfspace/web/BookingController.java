@@ -151,16 +151,16 @@ public class BookingController {
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<Void> deleteBooking(
+    public ResponseEntity<Void> cancelBooking(
             @PathVariable @Parameter(description = "Booking identifier", required = true)
             Integer id) {
-             log.info("DELETE /api/bookings/{} - Deleting booking", id);
+             log.info("CANCEL /api/bookings/{} - Canceled booking", id);
              try {
-                 bookingService.delete(id);
+                 bookingService.cancelBooking(id);
                     log.info("Booking with ID {} deleted successfully", id);
                     return ResponseEntity.noContent().build();
              }catch (RuntimeException e){
-                    log.warn("Error deleting booking: {}", e.getMessage());
+                    log.warn("Error canceling booking: {}", e.getMessage());
                     return ResponseEntity.notFound().build();
              }
 

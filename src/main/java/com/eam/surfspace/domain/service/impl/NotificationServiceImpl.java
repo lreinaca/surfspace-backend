@@ -46,6 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationDAO.save(notification);
     }
 
+    // se intentó implementar, pero es un tema avanzado para estudiantes de nivel intermedio
     @Override
     public NotificationDTO sendPaymentDue(Integer bookingId) {
         NotificationDTO notification = new NotificationDTO();

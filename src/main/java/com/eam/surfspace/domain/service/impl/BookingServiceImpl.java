@@ -3,6 +3,7 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.service.BookingService;
+import com.eam.surfspace.domain.service.MembershipService;
 import com.eam.surfspace.domain.service.NotificationService;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
@@ -27,9 +28,8 @@ import java.util.Optional;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO;
-    private final com.eam.surfspace.domain.service.impl.MembershipService membershipService; // Servicio para validar membresía
+    private final MembershipService membershipService;
     private final SpaceService spaceService;
-    private final NotificationService notificationService;
 
     @Override
     public BookingResponseDTO save(BookingRequestDTO bookingRequestDTO) {
@@ -215,15 +215,10 @@ public class BookingServiceImpl implements BookingService {
         return updatedBooking.orElse(null);
     }
 
-    /***
-     * Eliminar una reserva por su ID
-     * @param id - ID de la reserva a eliminar
-     * @throws IllegalArgumentException si el ID es inválido, no se encuentra la reserva,
-     *                                  o la reserva no puede ser eliminada (menos de 24h para el inicio)
-     */
+
     @Override
-    public void delete(Integer id) {
-        log.info("Deleting booking with ID: {}", id);
+    public void cancelBooking(Integer id) {
+        log.info("Cancelling booking with ID: {}", id);
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID de reserva inválido.");
         }
@@ -231,14 +226,15 @@ public class BookingServiceImpl implements BookingService {
         BookingResponseDTO existingBooking = bookingDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva con ID " + id + " no encontrada."));
 
-        // Validar que la reserva pueda ser eliminada (solo si faltan más de 24 horas para el inicio)
+        // Validar que la reserva pueda ser cancelada (solo si faltan más de 24 horas para el inicio)
         if (existingBooking.getStartDateTime().isBefore(LocalDateTime.now().plusHours(24))) {
             throw new IllegalArgumentException("La reserva solo puede eliminarse si faltan más de 24 horas para la hora de inicio.");
         }
 
-        bookingDAO.delete(id);
-        log.info("Booking with ID {} has been deleted successfully", id);
-
+        // Cambiar estado de la reserva a CANCELADA
+        existingBooking.setStatus("CANCELADA");
+        bookingDAO.updateStatus(id,existingBooking.getStatus());
+        log.info("Booking with ID {} has been cancelled successfully", id);
     }
 
 

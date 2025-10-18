@@ -65,15 +65,16 @@ public class BookingDAO {
                 });
     }
 
-    // DELETE
-    public boolean delete(Integer id) {
-        if (bookingRepository.existsById(id)) {
-            bookingRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+    // Solo para actualizar el estado de la reserva
+    public Optional<BookingResponseDTO> updateStatus(Integer id, String status) {
+        return bookingRepository.findById(id)
+                .map(existingBooking -> {
+                    existingBooking.setStatus(BookingMapper.mapStatusToEnum(status));
+                    BookingEntity updatedBooking = bookingRepository.save(existingBooking);
+                    return bookingMapper.toBookingDto(updatedBooking);
+                });
     }
+
 
 
 

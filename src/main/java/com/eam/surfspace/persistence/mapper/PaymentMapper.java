@@ -22,7 +22,8 @@ public interface PaymentMapper {
     //DTO -> Entity
     @Mapping(source = "status", target = "status", qualifiedByName = "stringToEnumStatus")
     @Mapping(source= "method", target= "method", qualifiedByName = "stringToEnumMethod")
-
+    // Evita que MapStruct intente mapear la relación inversa 'pago' dentro de booking
+    @Mapping(target = "booking.pago", ignore = true)
     PaymentEntity toPaymentEntity(PaymentDTO paymentDTO);
 
     List<PaymentDTO> toPaymentDTOList(List<PaymentEntity> paymentEntities);

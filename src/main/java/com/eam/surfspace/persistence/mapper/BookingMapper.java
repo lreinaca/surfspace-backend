@@ -43,6 +43,19 @@ public interface BookingMapper {
     java.util.List<BookingResponseDTO> toBookingsDto(java.util.List<BookingEntity>
     bookings);
 
+    // Para actualizar solo el estado de la reserva
+    @Named("mapStatusToEnum")
+    static EnumBookingStatus mapStatusToEnum(String status) {
+        try {
+            return EnumBookingStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Estado de reserva inválido: " + status);
+        }
+    }
+
+
+
+
 
 }
 

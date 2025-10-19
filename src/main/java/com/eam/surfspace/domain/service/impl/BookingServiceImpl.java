@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -26,17 +27,19 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingDAO bookingDAO;
-    private final MembershipService membershipService; // Servicio para validar membresía
+    private final MembershipService membershipService;
     private final SpaceService spaceService;
 
     @Override
     public BookingResponseDTO save(BookingRequestDTO bookingRequestDTO) {
         log.info("Create a new booking for a client in the coworking space {}",
-                bookingRequestDTO.getIdMembership());
-        // TODO
-        // Aqui debo llamar el método para validar que la membresia esté activa
-            // traer el metodo desde el servicio de membresia (MembershipService)
-        boolean isMembershipActive = true; // Simulación de la verificación de la membresía
+                bookingRequestDTO.getIdMembership() + " " + bookingRequestDTO.getIdSpace());
+
+        // Validar campos obligatorios
+        validateObligatoryFields(bookingRequestDTO);
+
+        // Validar que la membresía esté activa
+        boolean isMembershipActive = membershipService.isMembershipActive(bookingRequestDTO.getIdMembership());
         if (!isMembershipActive) {
             throw new IllegalArgumentException("La membresía no está activa. No se puede crear la reserva.");
         }
@@ -46,7 +49,6 @@ public class BookingServiceImpl implements BookingService {
                 bookingRequestDTO.getIdSpace(),
                 bookingRequestDTO.getStartDateTime(),
                 bookingRequestDTO.getEndDateTime()
-
         );
         if (!isSpaceAvailable) {
             throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
@@ -56,16 +58,33 @@ public class BookingServiceImpl implements BookingService {
         validateTimes(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
         validateDuration(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
 
-        // Crear reseeva
+
+        // Crear reserva
         BookingResponseDTO bookingResponseDTO = bookingDAO.save(bookingRequestDTO);
         log.info("Booking has been saved successfully");
 
         return bookingResponseDTO;
     }
 
+    private void validateObligatoryFields(BookingRequestDTO bookingRequestDTO) {
+        // Valida que el ID de la membresía no sea nulo
+        if (bookingRequestDTO.getIdMembership() == null || bookingRequestDTO.getIdMembership() <= 0) {
+            throw new IllegalArgumentException("El ID de la membresía no puede estar vacío o ser nulo.");
+        }
+
+        // Valida que el ID del espacio no sea nulo
+        if (bookingRequestDTO.getIdSpace() == null || bookingRequestDTO.getIdSpace().toString().isEmpty()) {
+            throw new IllegalArgumentException("El ID del espacio no puede estar vacío o ser nulo.");
+        }
+        // Valida que las fechas y horas no sean nulas
+        if (bookingRequestDTO.getStartDateTime() == null || bookingRequestDTO.getEndDateTime() == null
+            || bookingRequestDTO.getStartDateTime().toString().isEmpty() || bookingRequestDTO.getEndDateTime().toString().isEmpty()) {
+            throw new IllegalArgumentException("Hora de Inicio y Hora de Fin son Obligatorias");
+        }
+
+    }
     /***
      * Verifica las fechas y horas de la reserva : haciendo las siguientes validaciones
-     *  Valida que las las fechas y horas no sean nulas
      *  Valida que fecha y hora de inicio sea posterior a la hora actual
      *  Valida que la hora de fin sea mayor 30 minudos de la hora de inicio
      *  Valida que la fecha de inicio no sea mayor a 3 meses de la fecha actual
@@ -74,10 +93,6 @@ public class BookingServiceImpl implements BookingService {
      * @throws IllegalArgumentException si alguna de las validaciones falla
      */
     private void validateTimes(LocalDateTime start, LocalDateTime end) {
-        // Valida que las las fechas y horas no sean nulas
-        if (start == null || end == null) {
-            throw new IllegalArgumentException("Hora de Inicio y Hora de Fin son Obligatorias");
-        }
 
         // Valida que fecha y hora de inicio sea posterior a la hora actual
         if (start.isBefore(LocalDateTime.now())) {
@@ -131,6 +146,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+
     /***
      * Obtener todas las reservas
      * @return Lista de reservas
@@ -160,8 +176,82 @@ public class BookingServiceImpl implements BookingService {
                         "Reserva con ID " + id + " no encontrada."));
     }
 
+    /***
+     * Actualizar una reserva existente
+     * @param id - ID de la reserva a actualizar
+     * @param bookingRequestDTO - Datos actualizados de la reserva
+     * @return Reserva actualizada
+     * @throws IllegalArgumentException si el ID es inválido, no se encuentra la reserva,
+     *                                  la membresía no está activa, el espacio no está disponible,
+     *                                  o las validaciones de tiempo fallan
+     */
+    @Override
+    public BookingResponseDTO update(Integer id, BookingRequestDTO bookingRequestDTO) {
+        log.info("Updating booking with ID: {}", id);
+        if (id == null || id <= 0 || id.toString().isEmpty()) {
+            throw new IllegalArgumentException("ID de reserva inválido.");
+        }
 
+        BookingResponseDTO existingBooking = bookingDAO.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva con ID " + id + " no encontrada."));
 
+        // Validar que la reserva pueda ser modificada
+        validateModification(existingBooking.getStartDateTime());
 
+        // Validar que la membresía esté activa
+        boolean isMembershipActive = true; // Simulación de la verificación de la membresía
+        if (!isMembershipActive) {
+            throw new IllegalArgumentException("La membresía no está activa. No se puede actualizar la reserva.");
+        }
 
+        // Validar que el espacio esté disponible en el horario solicitado
+        boolean isSpaceAvailable = spaceService.isSpaceAvailable(
+                bookingRequestDTO.getIdSpace(),
+                bookingRequestDTO.getStartDateTime(),
+                bookingRequestDTO.getEndDateTime()
+        );
+        if (!isSpaceAvailable) {
+            throw new IllegalArgumentException("El espacio no está disponible en el horario solicitado.");
+        }
+
+        // Validar reglas de negocio respecto a las fechas y horas de la reserva
+        validateTimes(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
+        validateDuration(bookingRequestDTO.getStartDateTime(), bookingRequestDTO.getEndDateTime());
+
+        // Actualizar la reserva
+        existingBooking.setIdSpace(bookingRequestDTO.getIdSpace());
+        existingBooking.setStartDateTime(bookingRequestDTO.getStartDateTime());
+        existingBooking.setEndDateTime(bookingRequestDTO.getEndDateTime());
+
+        Optional<BookingResponseDTO> updatedBooking = bookingDAO.update(id, bookingRequestDTO);
+        log.info("Booking with ID {} has been updated successfully", id);
+        return updatedBooking.orElse(null);
+    }
+
+    /***
+     * Cancelar una reserva existente
+     * @param id - ID de la reserva a cancelar
+     * @throws IllegalArgumentException si el ID es inválido, no se encuentra la reserva,
+     *                                  o la reserva no puede ser cancelada
+     */
+    @Override
+    public void cancelBooking(Integer id) {
+        log.info("Cancelling booking with ID: {}", id);
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID de reserva inválido.");
+        }
+
+        BookingResponseDTO existingBooking = bookingDAO.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva con ID " + id + " no encontrada."));
+
+        // Validar que la reserva pueda ser cancelada (solo si faltan más de 24 horas para el inicio)
+        if (existingBooking.getStartDateTime().isBefore(LocalDateTime.now().plusHours(24))) {
+            throw new IllegalArgumentException("La reserva solo puede cancelarse si faltan más de 24 horas para la hora de inicio.");
+        }
+
+        // Cambiar estado de la reserva a CANCELADA
+        existingBooking.setStatus("CANCELADA");
+        bookingDAO.updateStatus(id,existingBooking.getStatus());
+        log.info("Booking with ID {} has been cancelled successfully", id);
+    }
 }

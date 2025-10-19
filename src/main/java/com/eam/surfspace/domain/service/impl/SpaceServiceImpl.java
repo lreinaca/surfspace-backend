@@ -1,6 +1,5 @@
 package com.eam.surfspace.domain.service.impl;
 
-import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.dto.SpaceDTO;
 import com.eam.surfspace.domain.service.SpaceService;
 import com.eam.surfspace.persistence.dao.BookingDAO;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional //si algo falla a mitad, se deshace cambios
@@ -23,7 +21,7 @@ public class SpaceServiceImpl implements SpaceService {
     private final SpaceDAO spaceDAO;
     private final BookingDAO bookingDAO;
 
-    //CREAR UN ESPACIO --------------------------------------------------------
+    //CREAR UN ESPACIO ----------------------------------------------------------
     @Override //sirve para sobreescribir un metodo de una interfaz
     public SpaceDTO createSpace(SpaceDTO spaceDTO) {
         log.info("creating new space");
@@ -45,7 +43,7 @@ public class SpaceServiceImpl implements SpaceService {
         return spaceDAO.findAll();
     }
 
-    //OBTENER EL ESPACIO POR ID -------------------------------------------
+    //OBTENER EL ESPACIO POR ID --------------------------------------------------
     @Override
     @Transactional(readOnly = true)
     public SpaceDTO getSpaceById(Integer idSpace) {
@@ -57,7 +55,7 @@ public class SpaceServiceImpl implements SpaceService {
         });
     }
 
-    //ACTUALIZAR ESPACIO ------------------------------------------------
+    //ACTUALIZAR ESPACIO ---------------------------------------------------------
     @Override
     public SpaceDTO updateSpace(Integer idSpace, SpaceDTO updateDTO) {
         log.info("updating space with id: {}", idSpace);
@@ -83,7 +81,7 @@ public class SpaceServiceImpl implements SpaceService {
         return updatedSpace;
     }
 
-    //DESACTIVAR ESPACIO ------------------------------------------------
+    //DESACTIVAR ESPACIO ---------------------------------------------------------
     @Override
     public void deactivateSpace(Integer idSpace) {
         log.info("deactivating space with id: {}", idSpace);
@@ -99,7 +97,7 @@ public class SpaceServiceImpl implements SpaceService {
         log.info("space with id: {} deactivated successfully", idSpace);
     }
 
-    //Metodo de validación de datos--------------------------------------------
+    //Metodo de validación de datos-----------------------------------------------
     public void validateSpaceData(SpaceDTO spaceDTO){
         if (spaceDTO.getStatus() == null){
             throw new IllegalArgumentException("Se debe definir el estado del espacio, no debe ser nulo");
@@ -118,7 +116,7 @@ public class SpaceServiceImpl implements SpaceService {
         }
     }
 
-    //Validar si un espacio está activo ---------------------------------------
+    //Validar si un espacio está activo ------------------------------------------
     public boolean isSpaceAvailable(int idSpace, LocalDateTime requestedStart, LocalDateTime requestedEnd){
         //verificar existencia del espacio que recibimos
         SpaceDTO space = spaceDAO.findById(idSpace)

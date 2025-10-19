@@ -38,10 +38,8 @@ public class BookingServiceImpl implements BookingService {
         // Validar campos obligatorios
         validateObligatoryFields(bookingRequestDTO);
 
-        // TODO : Validar que la membresía esté activa
-        // Aqui debo llamar el método para validar que la membresia esté activa
-            // traer el metodo desde el servicio de membresia (MembershipService)
-        boolean isMembershipActive = true; // Simulación de la verificación de la membresía
+        // Validar que la membresía esté activa
+        boolean isMembershipActive = membershipService.isMembershipActive(bookingRequestDTO.getIdMembership());
         if (!isMembershipActive) {
             throw new IllegalArgumentException("La membresía no está activa. No se puede crear la reserva.");
         }

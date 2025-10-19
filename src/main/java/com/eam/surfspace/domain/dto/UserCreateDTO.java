@@ -35,7 +35,7 @@ public class UserCreateDTO {
     private String telefono;
 
     @Schema(description = "Rol",
-            example = "AFILIADO",
+            example = " VISITANTE",
             required = true,
             maxLength = 50)
     private String rol;

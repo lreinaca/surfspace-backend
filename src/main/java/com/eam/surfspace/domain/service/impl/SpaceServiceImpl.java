@@ -21,7 +21,7 @@ public class SpaceServiceImpl implements SpaceService {
     private final SpaceDAO spaceDAO;
     private final BookingDAO bookingDAO;
 
-    //CREAR UN ESPACIO --------------------------------------------------------
+    //CREAR UN ESPACIO ----------------------------------------------------------
     @Override //sirve para sobreescribir un metodo de una interfaz
     public SpaceDTO createSpace(SpaceDTO spaceDTO) {
         log.info("creating new space");
@@ -43,7 +43,7 @@ public class SpaceServiceImpl implements SpaceService {
         return spaceDAO.findAll();
     }
 
-    //OBTENER EL ESPACIO POR ID -------------------------------------------
+    //OBTENER EL ESPACIO POR ID --------------------------------------------------
     @Override
     @Transactional(readOnly = true)
     public SpaceDTO getSpaceById(Integer idSpace) {
@@ -55,7 +55,7 @@ public class SpaceServiceImpl implements SpaceService {
         });
     }
 
-    //ACTUALIZAR ESPACIO ------------------------------------------------
+    //ACTUALIZAR ESPACIO ---------------------------------------------------------
     @Override
     public SpaceDTO updateSpace(Integer idSpace, SpaceDTO updateDTO) {
         log.info("updating space with id: {}", idSpace);
@@ -81,7 +81,7 @@ public class SpaceServiceImpl implements SpaceService {
         return updatedSpace;
     }
 
-    //DESACTIVAR ESPACIO ------------------------------------------------
+    //DESACTIVAR ESPACIO ---------------------------------------------------------
     @Override
     public void deactivateSpace(Integer idSpace) {
         log.info("deactivating space with id: {}", idSpace);
@@ -97,7 +97,7 @@ public class SpaceServiceImpl implements SpaceService {
         log.info("space with id: {} deactivated successfully", idSpace);
     }
 
-    //Metodo de validación de datos--------------------------------------------
+    //Metodo de validación de datos-----------------------------------------------
     public void validateSpaceData(SpaceDTO spaceDTO){
         if (spaceDTO.getStatus() == null){
             throw new IllegalArgumentException("Se debe definir el estado del espacio, no debe ser nulo");
@@ -116,7 +116,7 @@ public class SpaceServiceImpl implements SpaceService {
         }
     }
 
-    //Validar si un espacio está activo ---------------------------------------
+    //Validar si un espacio está activo ------------------------------------------
     public boolean isSpaceAvailable(int idSpace, LocalDateTime requestedStart, LocalDateTime requestedEnd){
         //verificar existencia del espacio que recibimos
         SpaceDTO space = spaceDAO.findById(idSpace)

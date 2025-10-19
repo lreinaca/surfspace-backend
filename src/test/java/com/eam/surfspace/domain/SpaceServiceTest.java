@@ -95,6 +95,7 @@ public class SpaceServiceTest {
         assertThat(passed.getName()).isEqualTo(newSpaceDTO.getName());
     }
 
+    //validaciones
     @Test
     @DisplayName("CREATE - empty state must throw IllegalArgumentException")
     void validateSpaceData_NullStatus_ShouldThrowException(){
@@ -173,7 +174,7 @@ public class SpaceServiceTest {
     // TEST DE TRAER ESPACIOS ================================================================================
     @Test
     @DisplayName("READ ALL - Must return list of spaces")
-    void getAllSpaces_ShouldReturnSpaceList() {
+    void getAllSpaces_ShouldReturnSpaceList(){
         // ARRANGE
         List<SpaceDTO> spaces = Arrays.asList(
                 new SpaceDTO(1, "Espacio 101", 25, "espacio de trabajo", SALA_DE_REUNION, DISPONIBLE),
@@ -224,7 +225,7 @@ public class SpaceServiceTest {
 
     @Test
     @DisplayName("READ - Nonexistent space should throw RuntimeException")
-    void getSpaceById_NonExistentId_ShouldThrowException() {
+    void getSpaceById_NonExistentId_ShouldThrowException(){
         // ARRANGE
         Integer nonExistentId = 999;
         when(spaceDAO.findById(nonExistentId)).thenReturn(Optional.empty());
@@ -235,6 +236,184 @@ public class SpaceServiceTest {
                 .hasMessageContaining("Space not found with ID: " + nonExistentId);
 
         verify(spaceDAO, times(1)).findById(nonExistentId);
+    }
+
+    // TEST DE ACTUALIZAR UN ESPACIO =========================================================================
+    @Test
+    @DisplayName("UPDATE - Valid update must return updated space")
+    void updateSpace_ValidData_ShouldReturnUpdatedSpace(){
+        //ARRANGE -----------------------------------------
+        //creamos un espacio existente
+        SpaceDTO existingSpace = new SpaceDTO(
+                validSpaceId,
+                "Espacio existente",
+                10,
+                "Descripcion existente",
+                SALA_DE_REUNION,
+                MANTENIMIENTO
+        );
+
+        //creamos los nuevos datos
+        SpaceDTO updateData = new SpaceDTO(
+                validSpaceId,
+                "Espacio actualizado",
+                25,
+                "Descripción actualizada",
+                ESPACIO_COMPARTIDO,
+                DISPONIBLE
+        );
+
+        //lo que el DAO devolvería si se actualizó correctamente
+        SpaceDTO updatedSpace = new SpaceDTO(
+                validSpaceId,
+                "Espacio actualizado",
+                25,
+                "Descripción actualizada",
+                ESPACIO_COMPARTIDO,
+                DISPONIBLE
+        );
+
+        //Cuando se busque el espacio por ID, devolvemos el existente
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(existingSpace));
+
+        //Cuando se actualice el espacio, devolvemos el actualizado
+        when(spaceDAO.updateSpace(eq(validSpaceId), any(SpaceDTO.class)))
+                .thenReturn(Optional.of(updatedSpace));
+
+        //ACT (ejecutamos el metodo) -----------------------
+        SpaceDTO result = spaceService.updateSpace(validSpaceId, updateData);
+
+        //ASSERT -------------------------------------------
+        assertThat(result).isNotNull();
+        assertThat(result.getIdSpace()).isEqualTo(validSpaceId);
+        assertThat(result.getName()).isEqualTo("Espacio actualizado");
+        assertThat(result.getCapacity()).isEqualTo(25);
+        assertThat(result.getDescription()).isEqualTo("Descripción actualizada");
+        assertThat(result.getType()).isEqualTo(ESPACIO_COMPARTIDO);
+        assertThat(result.getStatus()).isEqualTo(DISPONIBLE);
+
+        verify(spaceDAO, times(1)).updateSpace(eq(validSpaceId), any(SpaceDTO.class));
+    }
+
+    @Test
+    @DisplayName("UPDATE - Nonexistent space should throw RuntimeException")
+    void updateSpace_NonExistentId_ShouldThrowException(){
+        //ARRANGE -----------------------------------------
+        Integer nonExistentId = 999;
+
+        //simulamos que no se encontró el espacio
+        when(spaceDAO.findById(nonExistentId))
+                .thenReturn(Optional.empty());
+
+        //ACT (ejecutamos el metodo) -----------------------
+        assertThatThrownBy(()-> spaceService.updateSpace(nonExistentId,validSpaceDTO))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Space not found with ID: " + nonExistentId);
+
+        verify(spaceDAO, never()).updateSpace(anyInt(), any());
+    }
+
+    //validaciones
+    @Test
+    @DisplayName("UPDATE - empty state must throw IllegalArgumentException")
+    void updateSpace_NullStatus_ShouldThrowException(){
+        //ARRANGE (Preparar escenario)---------------------------------------
+        validSpaceDTO.setStatus(null);
+
+        //ACT & ASSERT ------------------------------------------------------
+        assertThatThrownBy(()-> spaceService.updateSpace(validSpaceId, validSpaceDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Se debe definir el estado del espacio, no debe ser nulo");
+
+        verify(spaceDAO, never()).updateSpace(anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("UPDATE - Null name must throw IllegalArgumentException")
+    void updateSpace_NullName_ShouldThrowException(){
+        //ARRANGE (Preparar escenario)---------------------------------------
+        validSpaceDTO.setName(null);
+
+        //ACT & ASSERT ------------------------------------------------------
+        assertThatThrownBy(() -> spaceService.updateSpace(validSpaceId, validSpaceDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("El espacio debe tener un nombre, no puede ser nulo");
+
+        verify(spaceDAO, never()).updateSpace(anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("UPDATE - Null description should throw IllegalArgumentException")
+    void updateSpace_NullDescription_ShouldThrowException(){
+        //ARRANGE (Preparar escenario)---------------------------------------
+        validSpaceDTO.setDescription(null);
+
+        //ACT & ASSERT ------------------------------------------------------
+        assertThatThrownBy(() -> spaceService.updateSpace(validSpaceId, validSpaceDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("El espacio debe tener una descripción, no puede ser nula");
+
+        verify(spaceDAO, never()).updateSpace(anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("UPDATE - Invalid capability should throw IllegalArgumentException")
+    void updateSpace_InvalidCapacity_ShouldThrowException(){
+        //ARRANGE (Preparar escenario)---------------------------------------
+        validSpaceDTO.setCapacity(0);
+
+        //ACT & ASSERT ------------------------------------------------------
+        assertThatThrownBy(() -> spaceService.updateSpace(validSpaceId, validSpaceDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("La capacidad debe ser un número positivo");
+
+        verify(spaceDAO, never()).updateSpace(anyInt(), any());
+    }
+
+    // TEST DE DESACTIVAR UN ESPACIO =========================================================================
+    @Test
+    @DisplayName("DEACTIVATE - Existing space must be set to INACTIVO and saved")
+    void deactivateSpace_ExistingSpace_ShouldSetStatusToInactiveAndSave(){
+        //ARRANGE (Preparar escenario)---------------------------------------
+        //simulamos un espacio con estado DISPONIBLE
+        SpaceDTO existingSpace = new SpaceDTO(
+                validSpaceId,
+                "Espacio a probarr",
+                25,
+                "Espacio de prueba",
+                SALA_DE_REUNION,
+                DISPONIBLE
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(existingSpace));
+
+        //ACT (ejecutamos la acción)
+        spaceService.deactivateSpace(validSpaceId);
+
+        //ASSERT (verificamos los resultados)
+        // verificamos que el estado del espacio fue cambiado a INACTIVO
+        assertThat(existingSpace.getStatus()).isEqualTo(INACTIVO);
+
+        verify(spaceDAO, times(1)).save(existingSpace);
+    }
+
+    @Test
+    @DisplayName("DEACTIVATE - Nonexistent space should throw RuntimeException")
+    void deactivateSpace_NonExistentId_ShouldThrowRuntimeException() {
+        //ARRANGE (Preparar escenario)---------------------------------------
+        Integer nonExistentId = 999;
+
+        //simulamos que el espacio no existe
+        when(spaceDAO.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        //ACT & ASSERT ------------------------------------------------------
+        //esperamos que se lance una excepción al intentar desactivarlo
+        assertThatThrownBy(() -> spaceService.deactivateSpace(nonExistentId))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Space not found with ID: " + nonExistentId);
+
+        //verificamos que NUNCA se llame a save()
+        verify(spaceDAO, never()).save(any(SpaceDTO.class));
     }
 
 }

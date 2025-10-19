@@ -4,8 +4,6 @@ import com.eam.surfspace.domain.dto.SpaceDTO;
 import com.eam.surfspace.domain.service.impl.SpaceServiceImpl;
 import com.eam.surfspace.persistence.dao.BookingDAO;
 import com.eam.surfspace.persistence.dao.SpaceDAO;
-import com.eam.surfspace.persistence.entity.EnumSpaceStatus;
-import com.eam.surfspace.persistence.entity.EnumSpaceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.eam.surfspace.persistence.entity.EnumPaymentStatus.PENDIENTE;
 import static com.eam.surfspace.persistence.entity.EnumSpaceStatus.*;
 import static com.eam.surfspace.persistence.entity.EnumSpaceType.ESPACIO_COMPARTIDO;
 import static com.eam.surfspace.persistence.entity.EnumSpaceType.SALA_DE_REUNION;
@@ -416,4 +414,85 @@ public class SpaceServiceTest {
         verify(spaceDAO, never()).save(any(SpaceDTO.class));
     }
 
+    // TEST PARA SABER SI ESPACIO ESTÁ DISPONIBLE ===========================================================
+    @Test
+    @DisplayName("AVAILABILITY - Available space with no overlap should return true")
+    void isSpaceAvailable_ValidData_ShouldReturnTrue() {
+        //ARRANGE -------------------------------------------------------
+        //definimos unas fechas válidas
+        LocalDateTime start = LocalDateTime.now().plusDays(1); //mañana
+        LocalDateTime end = start.plusHours(2); //dos horas después
+
+        SpaceDTO space = new SpaceDTO(
+                validSpaceId,
+                "Espacio 101",
+                20,
+                "Descripción de ejemplo!!",
+                SALA_DE_REUNION,
+                DISPONIBLE
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(space));
+
+        //simulamos que no hay otras reservas que "choquen" con ese rango de tiempo
+        when(bookingDAO.existsBySpaceIdAndTimeOverlap(validSpaceId, start, end)).thenReturn(false);
+
+        //ACT -----------------------------------------------------------
+        boolean result = spaceService.isSpaceAvailable(validSpaceId, start, end);
+
+        //ASSERT --------------------------------------------------------
+        assertThat(result).isTrue(); //verificamos que el resultado sea true (que el espacio está disponible)
+        verify(spaceDAO).findById(validSpaceId);
+        verify(bookingDAO).existsBySpaceIdAndTimeOverlap(validSpaceId, start, end);
+    }
+
+    @Test
+    @DisplayName("AVAILABILITY - Nonexistent space should throw IllegalArgumentException")
+    void isSpaceAvailable_NonExistentSpace_ShouldThrowException() {
+        //ARRANGE -----------------------------------------------------------------
+        //simulamos que el espacio no existe
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.empty());
+
+        //definimos fechas válidas
+        LocalDateTime start = LocalDateTime.now().plusDays(1);
+        LocalDateTime end = start.plusHours(2);
+
+        //ACT & ASSERT ------------------------------------------------------------
+        //esperamos que el metodo lance una IllegalArgumentException
+        assertThatThrownBy(() -> spaceService.isSpaceAvailable(validSpaceId, start, end))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("El espacio no fue encontrado");
+
+        verify(spaceDAO).findById(validSpaceId);
+
+        verifyNoInteractions(bookingDAO);
+    }
+
+    @Test
+    @DisplayName("AVAILABILITY - Start date after end should throw IllegalArgumentException")
+    void isSpaceAvailable_StartAfterEnd_ShouldThrowException() {
+        //ARRANGE -----------------------------------------------------------------
+        SpaceDTO space = new SpaceDTO(
+                validSpaceId,
+                "Espacio",
+                20,
+                "Desc",
+                SALA_DE_REUNION,
+                DISPONIBLE
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(space));
+
+        //definimos fechas inválidas
+        LocalDateTime start = LocalDateTime.now().plusDays(2); //después de end
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+
+        //ACT & ASSERT ------------------------------------------------------------
+        assertThatThrownBy(() -> spaceService.isSpaceAvailable(validSpaceId, start, end))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("La fecha de inicio debe ser anterior a la fecha de finalización");
+
+        verify(spaceDAO).findById(validSpaceId);
+        verifyNoInteractions(bookingDAO);
+    }
 }

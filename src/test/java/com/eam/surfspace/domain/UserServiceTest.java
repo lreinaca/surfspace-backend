@@ -26,11 +26,8 @@ public class UserServiceTest {
     @Mock
     private UserDAO userDAO;
 
-    @Mock
-    private UserService userService;
-
     @InjectMocks
-    private UserServiceImpl userServiceImpl;
+    private UserServiceImpl userService;
 
     private UserCreateDTO validUserCreateDTO;
     private UserUpdateDTO validUserUpdateDTO;
@@ -59,7 +56,6 @@ public class UserServiceTest {
     @Test
     @DisplayName("CREATE - Should create a user when data is valid")
     void testCreateUser_ValidData() {
-        when(userService.save(validUserCreateDTO)).thenReturn(expectedUserDTO);
         when(userDAO.save(validUserCreateDTO)).thenReturn(expectedUserDTO);
 
         UserDTO createdUser = userService.save(validUserCreateDTO);
@@ -69,7 +65,6 @@ public class UserServiceTest {
         assertThat(createdUser.getEmail()).isEqualTo(expectedUserDTO.getEmail());
         assertThat(createdUser.getRol()).isEqualTo(expectedUserDTO.getRol());
 
-        verify(userService).save(validUserCreateDTO);
         verify(userDAO).save(validUserCreateDTO);
     }
 
@@ -78,7 +73,6 @@ public class UserServiceTest {
     void testUpdateUser_ValidData() {
         Integer userId = 1;
 
-        when(userService.update(userId, validUserUpdateDTO)).thenReturn(Optional.of(expectedUserDTO));
         when(userDAO.update(userId, validUserUpdateDTO)).thenReturn(Optional.of(expectedUserDTO));
 
         Optional<UserDTO> updatedUser = userService.update(userId, validUserUpdateDTO);
@@ -86,7 +80,6 @@ public class UserServiceTest {
         assertThat(updatedUser).isPresent();
         assertThat(updatedUser.get().getNombre()).isEqualTo(expectedUserDTO.getNombre());
 
-        verify(userService).update(userId, validUserUpdateDTO);
         verify(userDAO).update(userId, validUserUpdateDTO);
     }
 
@@ -94,7 +87,6 @@ public class UserServiceTest {
     @DisplayName("FIND BY ID - Should return user when exists")
     void testFindUserById() {
         Integer userId = 1;
-        when(userService.findById(userId)).thenReturn(Optional.of(expectedUserDTO));
         when(userDAO.findById(userId)).thenReturn(Optional.of(expectedUserDTO));
 
         Optional<UserDTO> foundUser = userService.findById(userId);
@@ -102,7 +94,6 @@ public class UserServiceTest {
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getEmail()).isEqualTo(expectedUserDTO.getEmail());
 
-        verify(userService).findById(userId);
         verify(userDAO).findById(userId);
     }
 
@@ -111,14 +102,12 @@ public class UserServiceTest {
     void testDeleteUser() {
         Integer userId = 1;
 
-        when(userService.delete(userId)).thenReturn(true);
         when(userDAO.deleteById(userId)).thenReturn(true);
 
         boolean deleted = userService.delete(userId);
 
         assertThat(deleted).isTrue();
 
-        verify(userService).delete(userId);
         verify(userDAO).deleteById(userId);
     }
 }

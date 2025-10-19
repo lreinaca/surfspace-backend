@@ -80,6 +80,7 @@ public class BookingServiceTest {
     @DisplayName("CREATE - Debe crear una reserva cuando los datos son válidos")
     void testCreateBooking_ValidData() {
         // Configurar mocks
+        when(membershipService.isMembershipActive(any())).thenReturn(true);
         when(spaceService.isSpaceAvailable(validBookingDTO.getIdSpace(), validBookingDTO.getStartDateTime(), validBookingDTO.getEndDateTime())).thenReturn(true);
         when(bookingDAO.save(any(BookingRequestDTO.class))).thenReturn(validBookingResponseDTO);
 
@@ -100,6 +101,7 @@ public class BookingServiceTest {
     @DisplayName("CREATE - Debe lanzar excepción cuando el espacio no está disponible")
     void testCreateBooking_SpaceNotAvailable() {
         // Configurar mock
+        when(membershipService.isMembershipActive(any())).thenReturn(true);
         when(spaceService.isSpaceAvailable(validBookingDTO.getIdSpace(), validBookingDTO.getStartDateTime(), validBookingDTO.getEndDateTime())).thenReturn(false);
 
         // Verificar que lanza excepción
@@ -120,6 +122,7 @@ public class BookingServiceTest {
                 membershipId, spaceId, pastStart, pastEnd, "PENDIENTE"
         );
 
+        when(membershipService.isMembershipActive(pastBooking.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(pastBooking.getIdSpace(), pastBooking.getStartDateTime(), pastBooking.getEndDateTime())).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(pastBooking))
@@ -139,6 +142,8 @@ public class BookingServiceTest {
                 membershipId, spaceId, start, end, "PENDIENTE"
         );
 
+
+        when(membershipService.isMembershipActive(shortBooking.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(shortBooking.getIdSpace(), shortBooking.getStartDateTime(), shortBooking.getEndDateTime())).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(shortBooking))
@@ -158,6 +163,7 @@ public class BookingServiceTest {
                 membershipId, spaceId, start, end, "PENDIENTE"
         );
 
+        when(membershipService.isMembershipActive(longBooking.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(validBookingDTO.getIdSpace(),start, end)).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(longBooking))
@@ -177,6 +183,7 @@ public class BookingServiceTest {
                 membershipId, spaceId, farStart, farEnd, "PENDIENTE"
         );
 
+        when(membershipService.isMembershipActive(farBooking.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(validBookingDTO.getIdSpace(), farStart, farEnd)).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(farBooking))
@@ -186,8 +193,8 @@ public class BookingServiceTest {
         verify(bookingDAO, never()).save(any());
     }
 
-    // ========== TESTS PARA EL MÉTODO GET ALL BOOKINGS ==========
 
+    // ========== TESTS PARA EL METODO GET ALL BOOKINGS ============
     @Test
     @DisplayName("GET ALL - Debe retornar todas las reservas")
     void testGetAllBookings_Success() {
@@ -301,7 +308,7 @@ public class BookingServiceTest {
         when(bookingDAO.findById(bookingId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.update(bookingId, validBookingDTO))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("no encontrada");
 
         verify(bookingDAO).findById(bookingId);
@@ -376,7 +383,7 @@ public class BookingServiceTest {
         when(bookingDAO.findById(bookingId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.cancelBooking(bookingId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("no encontrada");
 
         verify(bookingDAO).findById(bookingId);

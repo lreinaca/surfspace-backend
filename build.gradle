@@ -26,6 +26,12 @@ repositories {
 }
 
 dependencies {
+    // reemplaza la dependencia de Mockito por la variante inline y
+    // asegura que JaCoCo lea el fichero .exec generado por los tests y
+    // conozca las fuentes para generar el HTML correctamente.
+    testImplementation 'org.mockito:mockito-inline:5.+'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -50,6 +56,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+    finalizedBy tasks.named('jacocoTestReport') // genera informe después de test
+
 }
 
 jacoco {

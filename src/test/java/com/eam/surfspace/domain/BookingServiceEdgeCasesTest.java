@@ -50,10 +50,6 @@ public class BookingServiceEdgeCasesTest {
     @DisplayName("SAVE - debe fallar cuando start o end son nulos")
     void saveShouldFailWhenTimesNull() {
         BookingRequestDTO dto = new BookingRequestDTO(membershipId, spaceId, null, null, "PENDIENTE");
-
-        // Asegurar que spaceService devuelva true para llegar a las validaciones de tiempo
-        when(spaceService.isSpaceAvailable(anyInt(), nullable(LocalDateTime.class), nullable(LocalDateTime.class))).thenReturn(true);
-
         assertThatThrownBy(() -> bookingService.save(dto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Hora de Inicio y Hora de Fin son Obligatorias");
@@ -66,6 +62,7 @@ public class BookingServiceEdgeCasesTest {
         LocalDateTime end = start.plusHours(1);
         BookingRequestDTO dto = new BookingRequestDTO(membershipId, spaceId, start, end, "PENDIENTE");
 
+        when(membershipService.isMembershipActive(dto.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(anyInt(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(dto))
@@ -80,6 +77,7 @@ public class BookingServiceEdgeCasesTest {
         LocalDateTime end = start.plusHours(2);
         BookingRequestDTO dto = new BookingRequestDTO(membershipId, spaceId, start, end, "PENDIENTE");
 
+        when(membershipService.isMembershipActive(dto.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(anyInt(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(dto))
@@ -94,6 +92,7 @@ public class BookingServiceEdgeCasesTest {
         LocalDateTime end = start.plusMinutes(90); // 1.5 horas
         BookingRequestDTO dto = new BookingRequestDTO(membershipId, spaceId, start, end, "PENDIENTE");
 
+        when(membershipService.isMembershipActive(dto.getIdMembership())).thenReturn(true);
         when(spaceService.isSpaceAvailable(anyInt(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(true);
 
         assertThatThrownBy(() -> bookingService.save(dto))
@@ -107,6 +106,7 @@ public class BookingServiceEdgeCasesTest {
         Integer bookingId = 1;
         LocalDateTime soonStart = LocalDateTime.now().plusHours(10);
         LocalDateTime soonEnd = soonStart.plusHours(2);
+
 
         BookingResponseDTO existing = new BookingResponseDTO(bookingId, membershipId, spaceId, soonStart, soonEnd, "PENDIENTE");
         when(bookingDAO.findById(bookingId)).thenReturn(Optional.of(existing));

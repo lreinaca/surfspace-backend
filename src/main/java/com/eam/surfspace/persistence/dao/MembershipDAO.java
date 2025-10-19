@@ -43,6 +43,14 @@ public class MembershipDAO {
     public MembershipDTO save(MembershipCreateDTO createDTO) {
         expireMembershipsIfNeeded();
 
+        UserEntity user = userRepository.findById(createDTO.getIdUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe."));
+
+
+        if (!user.getRol().equalsIgnoreCase("VISITANTE")) {
+            throw new IllegalArgumentException("Solo los usuarios con rol VISITANTE pueden obtener membresía.");
+        }
+
         boolean existsActive = membershipRepository.countByIdUsuario_IdUsuarioAndEstado(
                 createDTO.getIdUsuario(), MembershipStatus.ACTIVA) > 0;
 
@@ -50,30 +58,25 @@ public class MembershipDAO {
             throw new IllegalArgumentException("El usuario ya tiene una membresía activa.");
         }
 
-        MembershipEntity entity = membershipMapper.toEntity(createDTO);
 
+        MembershipEntity entity = membershipMapper.toEntity(createDTO);
+        entity.setIdUsuario(user);
         if (entity.getFechaInicio() == null) {
             entity.setFechaInicio(LocalDate.now());
         }
-        if (entity.getFechaFin() == null) {
-            entity.setFechaFin(entity.getFechaInicio().plusMonths(12));
-        } else {
-            entity.setFechaFin(entity.getFechaInicio().plusMonths(12));
-        }
-
+        entity.setFechaFin(entity.getFechaInicio().plusMonths(12));
         entity.setEstado(MembershipStatus.ACTIVA);
 
         MembershipEntity savedEntity = membershipRepository.save(entity);
 
-        UserEntity userRef = savedEntity.getIdUsuario();
-        if (userRef != null) {
-            userRepository.findById(userRef.getIdUsuario()).ifPresent(user -> {
-                user.setRol("AFILIADO");
-                userRepository.save(user);
-            });
-        }
 
-        return membershipMapper.toDTO(savedEntity);
+        user.setRol("AFILIADO");
+        userRepository.save(user);
+
+        MembershipDTO dto = membershipMapper.toDTO(savedEntity);
+        dto.setNombre(user.getNombre());
+
+        return dto;
     }
 
     public Optional<MembershipDTO> findById(Integer id) {
@@ -135,6 +138,10 @@ public class MembershipDAO {
             return true;
         }
         return false;
+    }
+    public boolean isMembershipActive(Integer idUsuario) {
+        expireMembershipsIfNeeded();
+        return membershipRepository.countByIdUsuario_IdUsuarioAndEstado(idUsuario, MembershipStatus.ACTIVA) > 0;
     }
 
 }

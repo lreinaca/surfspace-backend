@@ -33,5 +33,6 @@ public interface MembershipMapper {
         user.setIdUsuario(userId);
         return user;
     }
+
     void updateEntityFromDTO(MembershipUpdateDTO updateDTO, @MappingTarget MembershipEntity entity);
 }

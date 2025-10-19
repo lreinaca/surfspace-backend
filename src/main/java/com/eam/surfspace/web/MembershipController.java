@@ -2,7 +2,7 @@ package com.eam.surfspace.web;
 import com.eam.surfspace.domain.dto.MembershipCreateDTO;
 import com.eam.surfspace.domain.dto.MembershipDTO;
 import com.eam.surfspace.domain.dto.MembershipUpdateDTO;
-import com.eam.surfspace.domain.service.impl.MembershipService;
+import com.eam.surfspace.domain.service.MembershipService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

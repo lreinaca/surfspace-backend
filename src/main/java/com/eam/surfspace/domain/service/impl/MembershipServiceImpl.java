@@ -2,6 +2,7 @@ package com.eam.surfspace.domain.service.impl;
 import com.eam.surfspace.domain.dto.MembershipCreateDTO;
 import com.eam.surfspace.domain.dto.MembershipDTO;
 import com.eam.surfspace.domain.dto.MembershipUpdateDTO;
+import com.eam.surfspace.domain.service.MembershipService;
 import com.eam.surfspace.persistence.dao.MembershipDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class MembershipServiceImpl implements MembershipService{
+public class MembershipServiceImpl implements MembershipService {
     private final MembershipDAO membershipDAO;
 
     @Override
@@ -44,5 +45,10 @@ public class MembershipServiceImpl implements MembershipService{
     public boolean delete(Integer id) {
         log.info("Deleting membership with id {}", id);
         return membershipDAO.deleteById(id);
+    }
+    @Override
+    public boolean isMembershipActive(Integer idUsuario) {
+        log.info("Checking if user {} has an active membership", idUsuario);
+        return membershipDAO.isMembershipActive(idUsuario);
     }
 }

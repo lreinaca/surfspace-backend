@@ -26,6 +26,6 @@ public class UserUpdateDTO {
     @Schema(description = "Teléfono", example = "3109876543")
     private String telefono;
 
-    @Schema(description = "Rol del usuario (AFILIADO, VISITANTE, ADMINISTRADOR)", example = "AFILIADO")
+    @Schema(description = "Rol del usuario (AFILIADO, VISITANTE, ADMINISTRADOR)", example = "VISITANTE")
     private String rol;
 }

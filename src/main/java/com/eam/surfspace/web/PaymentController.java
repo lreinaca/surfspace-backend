@@ -49,7 +49,7 @@ public ResponseEntity<PaymentDTO> createPayment(
         log.info("payment created successfully\n");
         return ResponseEntity.status(HttpStatus.CREATED).body(newPayment);
     } catch (IllegalArgumentException e) {
-        log.warn("Error creating payment", e.getMessage());
+        log.warn("Error creating payment: {}", e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }
@@ -59,7 +59,7 @@ public ResponseEntity<PaymentDTO> createPayment(
     @Operation(summary = "Get all payments", description = "Retrieves all payments in the system")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Payments retrieved successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
+        @ApiResponse(responseCode = "404", description = "Endpoint not found")
     })
     public ResponseEntity<List<PaymentDTO>> getAllPayments(){
         log.debug("GET /api/payments - Getting all the payments");
@@ -70,10 +70,11 @@ public ResponseEntity<PaymentDTO> createPayment(
     }
 
     //READ PAYMENT FOR ID BOOKING---------------------------------
-    @GetMapping("/booking/{idBooking}")
+    @GetMapping("/booking/{id}")
     @Operation(summary = "Get payment for a booking", description = "get payment per reservation")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Payment retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No payment found for the specified booking ID"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<PaymentDTO> getPaymentByBooking(

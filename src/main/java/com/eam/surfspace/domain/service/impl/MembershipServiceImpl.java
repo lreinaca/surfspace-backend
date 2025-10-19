@@ -46,4 +46,9 @@ public class MembershipServiceImpl implements MembershipService {
         log.info("Deleting membership with id {}", id);
         return membershipDAO.deleteById(id);
     }
+    @Override
+    public boolean isMembershipActive(Integer idUsuario) {
+        log.info("Checking if user {} has an active membership", idUsuario);
+        return membershipDAO.isMembershipActive(idUsuario);
+    }
 }

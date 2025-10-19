@@ -27,9 +27,9 @@ public class UserDAO {
             throw new IllegalArgumentException("Este correo ya está registrado.");
         }
 
-        String rolToSet = createDTO.getRol() == null ? "USUARIO" : createDTO.getRol().trim().toUpperCase();
-        if (!validRol(rolToSet)) {
-            throw new IllegalArgumentException("Rol inválido. Solo se permite 'AFILIADO' o 'VISITANTE' o 'ADMINISTRADOR'.");
+        String rolToSet = createDTO.getRol() == null ? "VISITANTE" : createDTO.getRol().trim().toUpperCase();
+        if (!rolToSet.equals("VISITANTE") && !rolToSet.equals("ADMINISTRADOR")) {
+            throw new IllegalArgumentException("Solo se permite crear usuarios con rol VISITANTE o ADMINISTRADOR.");
         }
 
         UserEntity entity = userMapper.toEntity(createDTO);
@@ -50,20 +50,18 @@ public class UserDAO {
     public Optional<UserDTO> update(Integer id, UserUpdateDTO updateDTO) {
         return userRepository.findById(id)
                 .map(existingEntity -> {
-                    updateDTO.setIdUsuario(null);
+
                     updateDTO.setRol(null);
+
                     if (updateDTO.getNombre() != null && !updateDTO.getNombre().isBlank()) {
                         existingEntity.setNombre(updateDTO.getNombre());
                     }
-
                     if (updateDTO.getEmail() != null && !updateDTO.getEmail().isBlank()) {
                         existingEntity.setEmail(updateDTO.getEmail());
                     }
-
                     if (updateDTO.getTelefono() != null && !updateDTO.getTelefono().isBlank()) {
                         existingEntity.setTelefono(updateDTO.getTelefono());
                     }
-
                     if (updateDTO.getContrasena() != null && !updateDTO.getContrasena().isBlank()) {
                         existingEntity.setContrasena(updateDTO.getContrasena());
                     }

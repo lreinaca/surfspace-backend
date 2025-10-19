@@ -18,4 +18,5 @@ public interface MembershipService {
     List<MembershipDTO> findAll();
 
     boolean delete(Integer id);
+    boolean isMembershipActive(Integer idUsuario);
 }

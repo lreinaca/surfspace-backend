@@ -495,4 +495,82 @@ public class SpaceServiceTest {
         verify(spaceDAO).findById(validSpaceId);
         verifyNoInteractions(bookingDAO);
     }
+
+    @Test
+    @DisplayName("AVAILABILITY - Inactive space should return false")
+    void isSpaceAvailable_InactiveSpace_ShouldReturnFalse(){
+        //ARRANGE ----------------------------------------------
+        //creamos un espacio que no está disponible, osea Inactivo
+        SpaceDTO space = new SpaceDTO(
+                validSpaceId,
+                "Espacio inactivo",
+                25,
+                "Un espacio existente, pero inactivo",
+                SALA_DE_REUNION,
+                INACTIVO
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(space));
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusHours(2);
+
+        //ACT ---------------------------------------------------
+        boolean result = spaceService.isSpaceAvailable(validSpaceId, start, end);
+
+        //ASSERT ------------------------------------------------
+        assertThat(result).isFalse(); //debe devolver falso ya que el space está inactivo
+        verify(bookingDAO, never()).existsBySpaceIdAndTimeOverlap(anyInt(), any(), any());
+    }
+
+    @Test
+    @DisplayName("AVAILABILITY - Null dates should throw IllegalArgumentException")
+    void isSpaceAvailable_NullDates_ShouldThrowException(){
+        //ARRANGE ------------------------------------------
+        SpaceDTO space = new SpaceDTO(
+                validSpaceId,
+                "Espacio",
+                25,
+                "Un espacio existente",
+                SALA_DE_REUNION,
+                DISPONIBLE
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(space));
+
+        //ACT & ASSERT ---------------------------------------
+        //probamos que el metodo lance excepción si las fechas son null
+        assertThatThrownBy(()-> spaceService.isSpaceAvailable(validSpaceId, null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Se requieren fechas de inicio y finalización.");
+
+        verifyNoInteractions(bookingDAO);
+    }
+
+    @Test
+    @DisplayName("AVAILABILITY - Overlapping booking should return false")
+    void isSpaceAvailable_WithOverlap_ShouldReturnFalse(){
+        //ARRANGE ------------------------------------------
+        SpaceDTO space = new SpaceDTO(
+                validSpaceId,
+                "Espacio",
+                25,
+                "Un espacio existente",
+                SALA_DE_REUNION,
+                DISPONIBLE
+        );
+
+        when(spaceDAO.findById(validSpaceId)).thenReturn(Optional.of(space));
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusHours(2);
+
+        when(bookingDAO.existsBySpaceIdAndTimeOverlap(validSpaceId, start, end))
+                .thenReturn(true);
+
+        boolean result = spaceService.isSpaceAvailable(validSpaceId, start, end);
+
+        assertThat(result).isFalse();
+        verify(bookingDAO, times(1)).existsBySpaceIdAndTimeOverlap(validSpaceId, start, end);
+    }
 }

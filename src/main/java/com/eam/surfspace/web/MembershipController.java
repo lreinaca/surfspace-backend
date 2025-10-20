@@ -3,6 +3,9 @@ import com.eam.surfspace.domain.dto.MembershipCreateDTO;
 import com.eam.surfspace.domain.dto.MembershipDTO;
 import com.eam.surfspace.domain.dto.MembershipUpdateDTO;
 import com.eam.surfspace.domain.service.MembershipService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,13 @@ public class MembershipController {
         this.membershipService = membershipService;
     }
 
+    @Operation(summary = "Crear una nueva membresía",
+            description = "Crea una nueva membresía con los datos proporcionados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Membresía creada con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos o incompletos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PostMapping
     public ResponseEntity<MembershipDTO> createMembership(@RequestBody MembershipCreateDTO membership) {
         try {
@@ -35,6 +45,12 @@ public class MembershipController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todas las membresías",
+            description = "Devuelve una lista con todas las membresías registradas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membresías obtenidas correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ResponseEntity<List<MembershipDTO>> getAllMemberships() {
         try {
             List<MembershipDTO> memberships = membershipService.findAll();
@@ -45,6 +61,13 @@ public class MembershipController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener una membresía por ID",
+            description = "Devuelve la información de una membresía si existe.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membresía encontrada"),
+            @ApiResponse(responseCode = "404", description = "Membresía no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ResponseEntity<MembershipDTO> getMembershipById(@PathVariable Integer id) {
         try {
             Optional<MembershipDTO> membership = membershipService.findById(id);
@@ -55,6 +78,14 @@ public class MembershipController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una membresía existente",
+            description = "Modifica los datos de una membresía según su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membresía actualizada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos o incompletos"),
+            @ApiResponse(responseCode = "404", description = "Membresía no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ResponseEntity<MembershipDTO> updateMembership(@PathVariable Integer id, @RequestBody MembershipUpdateDTO updatedMembership) {
         try {
             Optional<MembershipDTO> updated = membershipService.update(id, updatedMembership);
@@ -67,6 +98,13 @@ public class MembershipController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar una membresía por ID",
+            description = "Elimina una membresía del sistema si existe.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Membresía eliminada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Membresía no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     public ResponseEntity<Void> deleteMembership(@PathVariable Integer id) {
         try {
             boolean deleted = membershipService.delete(id);

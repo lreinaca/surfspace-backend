@@ -1,8 +1,11 @@
 package com.eam.surfspace.domain;
 
+import com.eam.surfspace.domain.dto.BookingRequestDTO;
 import com.eam.surfspace.domain.dto.BookingResponseDTO;
 import com.eam.surfspace.domain.dto.PaymentDTO;
+import com.eam.surfspace.domain.service.NotificationService;
 import com.eam.surfspace.domain.service.impl.PaymentServiceImpl;
+import com.eam.surfspace.persistence.dao.BookingDAO;
 import com.eam.surfspace.persistence.dao.PaymentDAO;
 import com.eam.surfspace.persistence.entity.EnumPaymentMethod;
 import com.eam.surfspace.persistence.entity.EnumPaymentStatus;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,12 +30,15 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Payment Service Test")
-
 public class PaymentServiceTest {
 
     //mocks que simulan comportamientos de dependencias reales
     @Mock
     private PaymentDAO paymentDAO;
+    @Mock
+    private BookingDAO bookingDAO;
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private PaymentServiceImpl paymentService;
@@ -48,6 +55,7 @@ public class PaymentServiceTest {
         //simulamos una reserva válida
         validBookingDTO = new BookingResponseDTO();
         validBookingDTO.setBookingId(validBookingId);
+        validBookingDTO.setStatus("PENDIENTE");
 
         //creamos un PaymentDTO válido
         validPaymentDTO = new PaymentDTO();
@@ -61,18 +69,25 @@ public class PaymentServiceTest {
 
     // TEST DE CREAR PAGOS ===================================================================================
     @Test
-    @DisplayName("CREATE - Valid payment should be saved successfully")
-    void savePayment_ValidData_ShouldReturnCreatedPayment() {
-        //ARRANGE ----------------------------------------------------------
+    @DisplayName("CREATE - Valid payment should save successfully and confirm booking")
+    void savePayment_ValidData_ShouldSaveAndConfirmBooking() {
+        //ARRANGE --------------------------------------------------------
         when(paymentDAO.save(validPaymentDTO)).thenReturn(validPaymentDTO);
+        when(bookingDAO.findById(validBookingId))
+                .thenReturn(Optional.of(validBookingDTO)) // primera llamada
+                .thenReturn(Optional.of(validBookingDTO)); // segunda llamada
 
         //ACT --------------------------------------------------------------
         PaymentDTO result = paymentService.savePayment(validPaymentDTO);
 
-        //ASSERT -----------------------------------------------------------
+        // ASSERT -----------------------------------------------------------
         assertThat(result).isNotNull();
         assertThat(result.getAmount()).isEqualTo(150.0);
         verify(paymentDAO, times(1)).save(validPaymentDTO);
+
+        // Verificamos que se actualizó la reserva correctamente
+        verify(bookingDAO, times(1)).updateStatus(validBookingId, "CONFIRMADA");
+
     }
 
     //validaciones

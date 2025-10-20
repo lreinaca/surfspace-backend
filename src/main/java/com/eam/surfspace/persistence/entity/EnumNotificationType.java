@@ -1,7 +1,7 @@
 package com.eam.surfspace.persistence.entity;
 
 public enum EnumNotificationType {
-    booking_confirmation,
+    RESERVA,
     booking_cancellation,
     payment_received,
     payment_failed,

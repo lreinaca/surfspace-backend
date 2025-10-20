@@ -41,7 +41,7 @@ public ResponseEntity<PaymentDTO> createPayment(
         @RequestBody PaymentDTO paymentDTO) {
     try {
         if (paymentDTO.getBooking() != null) {
-            log.info("POST /api/payments - Creating payment for booking with id: {}", paymentDTO.getBooking().getBookingId());
+            log.info("POST /api/payments - Creating payment for booking with id: {}", paymentDTO.getBooking());
         } else {
             log.warn("POST /api/payments - El booking es nulo en el PaymentDTO recibido");
         }

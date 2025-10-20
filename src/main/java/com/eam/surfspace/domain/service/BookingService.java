@@ -1,9 +1,9 @@
 package com.eam.surfspace.domain.service;
 
-import com.eam.surfspace.domain.dto.BookingRequestDTO;
-import com.eam.surfspace.domain.dto.BookingResponseDTO;
+import com.eam.surfspace.domain.dto.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,4 +50,11 @@ public interface BookingService {
     BookingResponseDTO getBookingById(Integer id);
 
 
+    interface ReportService {
+        List<OccupancyReportDTO> getOccupancyReport(LocalDate startDate, LocalDate endDate);
+
+        IncomeReportDTO getIncomeReport(LocalDate startDate, LocalDate endDate);
+
+        UserReportDTO getUserReport(Integer userId, LocalDate startDate, LocalDate endDate);
+    }
 }

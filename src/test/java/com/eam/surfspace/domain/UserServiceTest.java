@@ -3,7 +3,6 @@ package com.eam.surfspace.domain;
 import com.eam.surfspace.domain.dto.UserCreateDTO;
 import com.eam.surfspace.domain.dto.UserDTO;
 import com.eam.surfspace.domain.dto.UserUpdateDTO;
-import com.eam.surfspace.domain.service.UserService;
 import com.eam.surfspace.domain.service.impl.UserServiceImpl;
 import com.eam.surfspace.persistence.dao.UserDAO;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -95,6 +95,43 @@ public class UserServiceTest {
         assertThat(foundUser.get().getEmail()).isEqualTo(expectedUserDTO.getEmail());
 
         verify(userDAO).findById(userId);
+    }
+
+    @Test
+    @DisplayName("FIND ALL - Should return list of users")
+    void testFindAllUsers(){
+        //ARRANGE
+        List<UserDTO> users = List.of(expectedUserDTO); //creamos una lista con un user
+        when(userDAO.findAll()).thenReturn(users); //configuramos el mock: cuando userDAO.findAll() sea llamado, que devuelva la lista users
+
+        //ACT (ejecutamos el metodo que queremos probar)
+        List<UserDTO> result = userService.findAll();
+
+        //ASSERT (verificamos los resultados esperados)
+        assertThat(result).isNotEmpty(); //comprobamos que la lista no esté vacía
+        assertThat(result).hasSize(1); //que tenga un objeto en ella
+        assertThat(result.get(0).getEmail()).isEqualTo(expectedUserDTO.getEmail()); //que el email sea igual
+
+        verify(userDAO).findAll(); //verificamos que el metodo findAll() del DAO fue llamado
+    }
+
+    @Test
+    @DisplayName("LOGIN - Should return user when credentials are correct")
+    void testLogin_ValidCredentials(){
+        //ARRANGE (definimos datos de prueba)
+        String email = validUserCreateDTO.getEmail();
+        String password = validUserCreateDTO.getContrasena();
+
+        when(userDAO.login(email, password)).thenReturn(Optional.of(expectedUserDTO)); //cuando el DAO reciba estas credenciales, devuelve Optional con el usuario
+
+        //ACT (llamamos al metodo login que vamos a probar
+        Optional<UserDTO> result = userService.login(email, password);
+
+        //ASSERT (comprobamos que el login fue exitoso)
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo(expectedUserDTO.getEmail());
+
+        verify(userDAO).login(email, password);
     }
 
     @Test

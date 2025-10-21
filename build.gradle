@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.eam'
@@ -25,6 +26,12 @@ repositories {
 }
 
 dependencies {
+    // reemplaza la dependencia de Mockito por la variante inline y
+    // asegura que JaCoCo lea el fichero .exec generado por los tests y
+    // conozca las fuentes para generar el HTML correctamente.
+    testImplementation 'org.mockito:mockito-inline:5.+'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -34,8 +41,38 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.12")
+
+	// MapStruct para mapeo automático
+	implementation 'org.mapstruct:mapstruct:1.6.3'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+	// Para usar MapStruct con Lombok
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    // Mockito (incluido en spring-boot-starter-test)
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+    finalizedBy tasks.named('jacocoTestReport') // genera informe después de test
+
+}
+
+jacoco {
+    toolVersion = '0.8.10'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    // Medir sólo el paquete de servicios (domain.service) para enfocarnos en la lógica de negocio
+    classDirectories.setFrom(files(classDirectories.files.collect { dir ->
+        fileTree(dir: dir, include: ['com/eam/surfspace/domain/service/**'])
+    }))
 }

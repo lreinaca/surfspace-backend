@@ -26,7 +26,7 @@ COPY src ./src
 # Compilar la aplicación y crear el JAR
 # -x test: omite los tests para build más rápido
 # --no-daemon: no deja procesos en segundo plano
-RUN gradle clean build -x test -x allureReport -x allureServe --no-daemon
+RUN gradle clean build -x test --no-daemon
 
 # ============================================
 # ETAPA 2: Ejecución (Runtime Stage)

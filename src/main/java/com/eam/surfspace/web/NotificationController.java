@@ -28,14 +28,13 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    // SOLO EL LISTAR PORQUE DESDE EL FRONT NO VOY A REALIZAR OTRAS OPERACIONES
+    // SOLO EL LISTAR PORQUE DESDE EL FRONT NO vamos A REALIZAR OTRAS OPERACIONES
     // READ ALL
     @GetMapping
     @Operation(summary = "Get all notifications",
             description = "Retrieve a list of all notifications sent to clients in the coworking space")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of notifications retrieved successfully"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<NotificationDTO>> getAllNotifications() {
        log.debug ("GET / /api/notifications - Retrieving all notifications");

@@ -6,6 +6,7 @@ import com.eam.surfspace.persistence.entity.UserEntity;
 import com.eam.surfspace.persistence.mapper.UserMapper;
 import com.eam.surfspace.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class UserDAO {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     private boolean validRol(String rol) {
         if (rol == null) return false;
@@ -34,6 +36,10 @@ public class UserDAO {
 
         UserEntity entity = userMapper.toEntity(createDTO);
         entity.setRol(rolToSet);
+        // Codificar la contraseña antes de guardar
+        if (entity.getContrasena() != null && !entity.getContrasena().isBlank()) {
+            entity.setContrasena(passwordEncoder.encode(entity.getContrasena()));
+        }
         UserEntity savedEntity = userRepository.save(entity);
         return userMapper.toDTO(savedEntity);
     }
@@ -63,7 +69,8 @@ public class UserDAO {
                         existingEntity.setTelefono(updateDTO.getTelefono());
                     }
                     if (updateDTO.getContrasena() != null && !updateDTO.getContrasena().isBlank()) {
-                        existingEntity.setContrasena(updateDTO.getContrasena());
+                        // Codificar si se actualiza la contraseña
+                        existingEntity.setContrasena(passwordEncoder.encode(updateDTO.getContrasena()));
                     }
 
                     UserEntity updatedEntity = userRepository.save(existingEntity);

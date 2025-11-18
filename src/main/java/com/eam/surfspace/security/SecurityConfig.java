@@ -39,10 +39,12 @@ public class SecurityConfig {
                 ).permitAll()
                 // Permitir acceso a endpoints de autenticación
                 .requestMatchers("/api/auth/**").permitAll()
-                // Permitir acceso a todos los endpoints de la API (desarrollo)
-                .requestMatchers("/api/**").permitAll()
+                // Permitir acceso a la mayoría de endpoints de la API (desarrollo)
+                .requestMatchers("/api/users/**", "/api/reports/**", "/api/bookings/**", "/api/spaces/**", "/api/payments/**", "/api/memberships/**", "/api/notifications/**").permitAll()
                 // Permitir acceso a la raíz
                 .requestMatchers("/").permitAll()
+                // IMPORTANTE: endpoints bajo /api/secure/** REQUIEREN autenticación (para probar JWT)
+                .requestMatchers("/api/secure/**").authenticated()
                 // Cualquier otra petición también es pública por ahora
                 .anyRequest().permitAll()
             )

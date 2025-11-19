@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Base de datos MariaDB
+  db:
+    image: mariadb:11.2
+    container_name: surfspace-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: surfspace
+      MYSQL_USER: adminSS
+      MYSQL_PASSWORD: ss1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - surfspace-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación Spring Boot
+  surfspace-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: surfspace-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-this-in-production}
+      - SERVER_PORT=8080
+    ports:
+      - "8080:8080"
+    networks:
+      - surfspace-network
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  surfspace-network:
+    driver: bridge

@@ -1,9 +1,0 @@
-# Render Deployment Configuration
-# This file tells Render how to build and run your Spring Boot application
-
-# Build command
-buildCommand = "./gradlew clean build -x test"
-
-# Start command
-startCommand = "java -jar build/libs/SurfSpace-App-0.0.1-SNAPSHOT.jar"
-

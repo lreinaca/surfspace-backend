@@ -3,7 +3,6 @@ package com.eam.surfspace.web;
 
 import com.eam.surfspace.domain.dto.UserCreateDTO;
 import com.eam.surfspace.domain.dto.UserDTO;
-import com.eam.surfspace.domain.dto.UserLoginDTO;
 import com.eam.surfspace.domain.dto.UserUpdateDTO;
 import com.eam.surfspace.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,8 +45,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -124,28 +122,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    @PostMapping("/login")
-    @Operation(summary = "Iniciar sesión",
-            description = "Permite iniciar sesión con correo y contraseña.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login exitoso"),
-            @ApiResponse(responseCode = "401", description = "Credenciales incorrectas"),
-            @ApiResponse(responseCode = "400", description = "Faltan campos obligatorios"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginDTO loginRequest) {
-        try {
-            if (loginRequest.getEmail() == null || loginRequest.getContrasena() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email y contraseña requeridos");
-            }
-
-            return userService.login(loginRequest.getEmail(), loginRequest.getContrasena())
-                    .map(user -> ResponseEntity.ok("Login exitoso"))
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno");
-        }
-    }
-
 }

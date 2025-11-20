@@ -37,6 +37,8 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
+                // Permitir acceso a Actuator para healthchecks
+                .requestMatchers("/actuator/**").permitAll()
                 // Permitir acceso a endpoints de autenticación
                 .requestMatchers("/api/auth/**").permitAll()
                 // Permitir acceso a la mayoría de endpoints de la API (desarrollo)
@@ -59,7 +61,9 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // Usar 4 rondas para desarrollo (más rápido)
+        // En producción usar 10-12 rondas
+        return new BCryptPasswordEncoder(4);
     }
 
     @Bean

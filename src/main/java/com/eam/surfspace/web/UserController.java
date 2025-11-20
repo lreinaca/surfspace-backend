@@ -122,23 +122,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    @PostMapping("/login")
-    @Operation(summary = "Iniciar sesión",
-            description = "Permite iniciar sesión con correo y contraseña.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login exitoso"),
-            @ApiResponse(responseCode = "401", description = "Credenciales incorrectas"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    public ResponseEntity<String> loginUser(@RequestBody UserCreateDTO loginRequest) {
-        try {
-            if (loginRequest.getEmail() != null && loginRequest.getContrasena() != null) {
-                return ResponseEntity.ok("Login exitoso");
-            }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno");
-        }
-    }
 }
